@@ -1,0 +1,12 @@
+{
+    "component": "r2artifact",
+    "repoName": "insuranceroyal-trx5",
+    "uuaa": "pisd",
+    "slave_label": "apx",
+    "extra_properties": null,
+    "apxrepoBranch": "master",
+    "componentPaaSId": "insuranceroyal-trx5",
+    "appPaaSId": "pisd",
+    "proyectPaaSId": "pe.pisd.app-id-26197.dsg",
+    "resource_type": "du_online"
+}
