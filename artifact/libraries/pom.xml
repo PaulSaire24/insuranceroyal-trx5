@@ -12,5 +12,8 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>LIBRARIES-insuranceroyal-trx5</name>
-	<modules/>
+	<modules>
+		<module>PISDR018</module>
+		<module>PISDR018IMPL</module>
+	</modules>
 </project>
