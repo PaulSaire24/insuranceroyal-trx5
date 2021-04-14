@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+	<bean id="pisdR018Abstract" abstract="true" class="com.bbva.pisd.lib.r018.impl.PISDR018Abstract"/>
+	<bean id="pisdR018" class="com.bbva.pisd.lib.r018.impl.PISDR018Impl" parent="pisdR018Abstract">
+		<property name="applicationConfigurationService" ref="applicationConfigurationService"/>
+		<property name="pisdR011" ref="pisdR011"/>
+	</bean>
+	<bean id="applicationConfigurationService" factory-bean="applicationConfigurationServiceFactory" factory-method="getApplicationConfigurationService">
+		<constructor-arg type="org.osgi.framework.BundleContext" ref="bundleContext"/>
+	</bean>
+	<bean id="pisdR011" class="org.mockito.Mockito" factory-method="mock">
+		<constructor-arg value="com.bbva.pisd.lib.r011.PISDR011"/>
+	</bean>
+</beans>
