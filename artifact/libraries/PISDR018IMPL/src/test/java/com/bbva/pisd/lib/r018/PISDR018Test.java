@@ -68,7 +68,7 @@ public class PISDR018Test {
 
 	@Test
 	public void executeBlackListValidationTestNull() {
-		LOGGER.info("PISDR003Test - Executing executeBlackListValidationTestNull...");
+		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestNull...");
 		InsuranceBlackListDTO request = null;
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
@@ -104,7 +104,7 @@ public class PISDR018Test {
 
 	@Test
 	public void executeBlackListValidationTestOK() throws IOException {
-		LOGGER.info("PISDR003Test - Executing executeBlackListValidationTestOK...");
+		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestOK...");
 		SelectionQuotationPayloadBO blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
 		SelectionQuotationPayloadBO blNegativeRimac = mockDTO.getBlackListValidationNegativeRimacMockResponse();
 		BlackListIndicatorBO bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
