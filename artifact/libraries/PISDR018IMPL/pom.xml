@@ -9,7 +9,7 @@
 	<groupId>com.bbva.pisd</groupId>
 	<artifactId>PISDR018IMPL</artifactId>
 	<name>PISDR018IMPL</name>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<description>Business logic for blacklist service</description>
 	<properties>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
 			<artifactId>PISDR018</artifactId>
-			<version>0.1.1-SNAPSHOT</version>
+			<version>0.1.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
