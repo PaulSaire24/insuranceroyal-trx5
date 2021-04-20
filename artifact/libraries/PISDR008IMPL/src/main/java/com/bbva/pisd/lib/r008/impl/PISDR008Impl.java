@@ -32,13 +32,13 @@ public class PISDR008Impl extends PISDR008Abstract {
 
 	@Override
 	public BlackListIndicatorBO executeGetBlackListIndicatorService(String customerId) {
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListIndicatorService START *****");
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListIndicatorService ***** customerId: {} ", customerId);
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListIndicatorService START *****");
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListIndicatorService ***** customerId: {} ", customerId);
 
 		if(this.mockService.isEnabled(PISDConstants.MOCKERBBVA)) {
-			LOGGER.info("***** PISDR011Impl - asoMockService getBlackListBBVAMock Invokation *****");
+			LOGGER.info("***** PISDR008Impl - asoMockService getBlackListBBVAMock Invokation *****");
 			BlackListASO mockresp = this.mockService.getBlackListBBVAMock();
-			LOGGER.info("***** PISDR011Impl - asoMockService getBlackListBBVAMock Invokation ***** mockresp: {} ", mockresp);
+			LOGGER.info("***** PISDR008Impl - asoMockService getBlackListBBVAMock Invokation ***** mockresp: {} ", mockresp);
 			return mockresp.getData().stream().filter(s -> s.getIndicatorId().equals("INE")).findAny().orElse(null);
 		}
 
@@ -56,26 +56,26 @@ public class PISDR008Impl extends PISDR008Abstract {
 					output = response.getData().stream().filter(s -> s.getIndicatorId().equals("INE")).findAny().orElse(null);
 				}
 			} catch(RestClientException e) {
-				LOGGER.info("***** PISDR011Impl - executeGetBlackListIndicatorService ***** Exception: {}", e.getMessage());
+				LOGGER.info("***** PISDR008Impl - executeGetBlackListIndicatorService ***** Exception: {}", e.getMessage());
 				this .addAdvice(PISDErrors.ERROR_TO_CONNECT_SERVICE_BLACKLIST_ASO.getAdviceCode());
 			}
 		}
 
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListIndicatorService ***** Response: {}", output);
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListIndicatorService END *****");
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListIndicatorService ***** Response: {}", output);
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListIndicatorService END *****");
 
 		return output;
 	}
 
 	@Override
 	public SelectionQuotationPayloadBO executeGetBlackListRiskService(IdentityDataDTO payload, String traceId) {
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListRiskService START *****");
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListRiskService ***** Params: {}", payload);
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService START *****");
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Params: {}", payload);
 
 		if(this.mockService.isEnabled(PISDConstants.MOCKERRIMAC)) {
-			LOGGER.info("***** PISDR011Impl - asoMockService getBlackListRiskRimacMock Invokation *****");
+			LOGGER.info("***** PISDR008Impl - asoMockService getBlackListRiskRimacMock Invokation *****");
 			SelectionQuotationPayloadBO mockresp = this.mockService.getBlackListRiskRimacMock().getPayload().get(0);
-			LOGGER.info("***** PISDR011Impl - asoMockService getBlackListRiskRimacMock Invokation ***** mockresp: {} ", mockresp);
+			LOGGER.info("***** PISDR008Impl - asoMockService getBlackListRiskRimacMock Invokation ***** mockresp: {} ", mockresp);
 			return mockresp;
 		}
 
@@ -97,25 +97,25 @@ public class PISDR008Impl extends PISDR008Abstract {
 					output = response.getPayload().get(0);
 				}
 			} catch(RestClientException e) {
-				LOGGER.info("***** PISDR011Impl - executeGetBlackListRiskService ***** Exception: {}", e.getMessage());
+				LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Exception: {}", e.getMessage());
 				this .addAdvice(PISDErrors.ERROR_TO_CONNECT_SERVICE_BLACKLISTRISK_RIMAC.getAdviceCode());
 			}
 		}
 
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListRiskService ***** Response: {}", output);
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListRiskService END *****");
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Response: {}", output);
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService END *****");
 		return output;
 	}
 
 	@Override
 	public SelectionQuotationPayloadBO executeGetBlackListHealthService(IdentityDataDTO payload, String traceId) {
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListHealthService START *****");
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListHealthService ***** Params: {} - {}", payload, traceId);
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListHealthService START *****");
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListHealthService ***** Params: {} - {}", payload, traceId);
 
 		if(this.mockService.isEnabled(PISDConstants.MOCKERRIMAC)) {
-			LOGGER.info("***** PISDR011Impl - asoMockService getBlackListHealthRimacMock Invokation *****");
+			LOGGER.info("***** PISDR008Impl - asoMockService getBlackListHealthRimacMock Invokation *****");
 			SelectionQuotationPayloadBO mockresp = this.mockService.getBlackListHealthRimacMock().getPayload();
-			LOGGER.info("***** PISDR011Impl - asoMockService getBlackListRiskRimacMock Invokation ***** mockresp: {} ", mockresp);
+			LOGGER.info("***** PISDR008Impl - asoMockService getBlackListRiskRimacMock Invokation ***** mockresp: {} ", mockresp);
 			return mockresp;
 		}
 
@@ -136,13 +136,13 @@ public class PISDR008Impl extends PISDR008Abstract {
 					output = response.getPayload();
 				}
 			} catch(RestClientException e) {
-				LOGGER.info("***** PISDR011Impl - executeGetBlackListHealthService ***** Exception: {}", e.getMessage());
+				LOGGER.info("***** PISDR008Impl - executeGetBlackListHealthService ***** Exception: {}", e.getMessage());
 				this .addAdvice(PISDErrors.ERROR_TO_CONNECT_SERVICE_BLACKLISTHEALTH_RIMAC.getAdviceCode());
 			}
 		}
 
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListHealthService ***** Response: {}", output);
-		LOGGER.info("***** PISDR011Impl - executeGetBlackListHealthService END *****");
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListHealthService ***** Response: {}", output);
+		LOGGER.info("***** PISDR008Impl - executeGetBlackListHealthService END *****");
 		return output;
 	}
 

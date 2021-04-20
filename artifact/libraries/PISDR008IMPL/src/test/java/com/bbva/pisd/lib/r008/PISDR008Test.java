@@ -89,7 +89,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListIndicatorServiceTestNull() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListIndicatorServiceTestNull...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListIndicatorServiceTestNull...");
 		when(mockService.isEnabled(anyString())).thenReturn(false);
 		when(internalApiConnector.getForObject(anyString(), any(), anyMap())).thenReturn(null);
 		BlackListIndicatorBO validation = pisdr008.executeGetBlackListIndicatorService(null);
@@ -105,7 +105,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListIndicatorServiceTestWithMockData() throws IOException {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListIndicatorServiceTestWithMockData...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListIndicatorServiceTestWithMockData...");
 
 		when(mockService.isEnabled(anyString())).thenReturn(true);
 		when(mockService.getBlackListBBVAMock()).thenReturn(responseBlackListASO);
@@ -116,7 +116,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListRiskServiceTestNull() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListRiskServiceTestNull...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceTestNull...");
 		when(mockService.isEnabled(anyString())).thenReturn(false);
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any())).thenReturn(null);
 		SelectionQuotationPayloadBO validation = pisdr008.executeGetBlackListRiskService(null, "");
@@ -144,7 +144,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListRiskServiceTestWithMockData() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListRiskServiceTestWithMockData...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceTestWithMockData...");
 
 		when(mockService.isEnabled(anyString())).thenReturn(true);
 		when(mockService.getBlackListRiskRimacMock()).thenReturn(responseBlackListRiskRimac);
@@ -159,7 +159,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListHealthServiceTestNull() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListHealthServiceTestNull...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListHealthServiceTestNull...");
 		when(mockService.isEnabled(anyString())).thenReturn(false);
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any())).thenReturn(null);
 		SelectionQuotationPayloadBO validation = pisdr008.executeGetBlackListHealthService(null, "");
@@ -181,7 +181,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListHealthServiceTestWithMockData() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListHealthServiceTestWithMockData...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListHealthServiceTestWithMockData...");
 
 		when(mockService.isEnabled(anyString())).thenReturn(true);
 		when(mockService.getBlackListHealthRimacMock()).thenReturn(responseBlackListHealthRimac);
@@ -195,7 +195,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListIndicatorServiceOK() throws IOException {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListIndicatorServiceOK...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListIndicatorServiceOK...");
 
 		BlackListASO response = mockDTO.getBlackListASOMockResponse();
 
@@ -214,7 +214,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListIndicatorServiceWithRestClientException() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListIndicatorServiceWithRestClientException...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListIndicatorServiceWithRestClientException...");
 
 		when(internalApiConnector.getForObject(anyString(), any(), anyMap()))
 				.thenThrow(new RestClientException("CONNECTION ERROR"));
@@ -225,7 +225,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListRiskServiceOK() throws IOException {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListRiskServiceOK...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceOK...");
 
 		BlackListRiskRimacBO response = mockDTO.getBlackListRiskRimacMockResponse();
 
@@ -265,7 +265,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListRiskServiceWithRestClientException() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListRiskServiceWithRestClientException...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceWithRestClientException...");
 
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any()))
 				.thenThrow(new RestClientException("CONNECTION ERROR"));
@@ -276,7 +276,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListHealthServiceOK() throws IOException {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListHealthServiceOK...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListHealthServiceOK...");
 
 		BlackListHealthRimacBO response = mockDTO.getBlackListHealthRimacMockResponse();
 
@@ -317,7 +317,7 @@ public class PISDR008Test {
 
 	@Test
 	public void executeGetBlackListHealthServiceWithRestClientException() {
-		LOGGER.info("PISDR011Test - Executing executeGetBlackListHealthServiceWithRestClientException...");
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListHealthServiceWithRestClientException...");
 
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any()))
 				.thenThrow(new RestClientException("CONNECTION ERROR"));
