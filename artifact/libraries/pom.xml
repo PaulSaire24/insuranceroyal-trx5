@@ -15,5 +15,7 @@
 	<modules>
 		<module>PISDR018</module>
 		<module>PISDR018IMPL</module>
+		<module>PISDR008</module>
+		<module>PISDR008IMPL</module>
 	</modules>
 </project>

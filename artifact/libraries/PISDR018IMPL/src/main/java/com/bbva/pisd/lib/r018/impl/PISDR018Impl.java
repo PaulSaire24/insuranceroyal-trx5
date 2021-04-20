@@ -108,7 +108,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 		input.setTipoLista(bltype);
 		switch (productId) {
 			case PISDConstants.HEALTH_RIMAC:
-				resp = pisdR011.executeGetBlackListHealthService(input, traceId);
+				resp = pisdR008.executeGetBlackListHealthService(input, traceId);
 				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - SALUD - END *****");
 				break;
 			default:
@@ -117,7 +117,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 					LOGGER.info("***** PISDR018Impl - executeBlackListValidation indicator-IsActive ***** indicator: {}", indicator);
 					return indicator;
 				}
-				resp = pisdR011.executeGetBlackListRiskService(input, traceId);
+				resp = pisdR008.executeGetBlackListRiskService(input, traceId);
 				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - default - END *****");
 				break;
 		}
@@ -143,7 +143,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 		BlackListIndicatorBO indicator = null;
 		if (customerId != null) {
 			LOGGER.info("***** PISDR018Impl - executeBlackListValidation executeGetBlackListIndicatorService *****");
-			indicator = pisdR011.executeGetBlackListIndicatorService(customerId);
+			indicator = pisdR008.executeGetBlackListIndicatorService(customerId);
 			LOGGER.info(
 					"***** PISDR018Impl - executeBlackListValidation executeGetBlackListIndicatorService ***** indicator: {}",
 					indicator);

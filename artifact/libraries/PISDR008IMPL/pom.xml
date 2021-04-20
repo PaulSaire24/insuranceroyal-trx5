@@ -7,24 +7,24 @@
 		<version>0.2.1-SNAPSHOT</version>
 	</parent>
 	<groupId>com.bbva.pisd</groupId>
-	<artifactId>PISDR018IMPL</artifactId>
-	<name>PISDR018IMPL</name>
+	<artifactId>PISDR008IMPL</artifactId>
+	<name>PISDR008IMPL</name>
 	<version>0.2.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
-	<description>Business logic for blacklist service</description>
+	<description>Library to consume APIs</description>
 	<properties>
 		<osgi.version.manifest>0.0</osgi.version.manifest>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
-			<artifactId>PISDR018</artifactId>
+			<artifactId>PISDR008</artifactId>
 			<version>0.2.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
-			<artifactId>PISDR008</artifactId>
-			<version>0.2.1-SNAPSHOT</version>
+			<artifactId>PISDR014</artifactId>
+			<version>0.9.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.elara</groupId>
@@ -93,6 +93,11 @@
 			<version>${apx.core.online.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.bbva.elara</groupId>
+			<artifactId>elara-utility-api-connector</artifactId>
+			<version>${apx.api.connector.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -104,10 +109,14 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}-${project.version}</Bundle-SymbolicName>
-						<Bundle-Category>library</Bundle-Category>
+						<Bundle-Category>library-extapiconnector-intapiconnector</Bundle-Category>
 						<Import-Package>
+							com.bbva.pisd.lib.r014.*;version="${osgi.version.manifest}",
+							javax.xml.transform;version="${osgi.version.manifest}",
+							org.springframework.http;version="${osgi.version.manifest}",
+							org.springframework.core;version="${osgi.version.manifest}",
+							org.springframework.web.client;version="${osgi.version.manifest}",
 							com.bbva.pisd.lib.r008.*;version="${osgi.version.manifest}",
-							com.bbva.pisd.lib.r018.*;version="${osgi.version.manifest}",
 							com.bbva.elara.*;version="${osgi.version.manifest}",
 							org.osgi.framework;version="${osgi.version.manifest}",
 							com.bbva.elara.aspect;version="${osgi.version.manifest}",

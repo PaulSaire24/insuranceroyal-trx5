@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:osgi="http://www.springframework.org/schema/osgi" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+	<import resource="classpath:/spring/elara-aspect.xml"/>
+	<bean id="pisdR008Abstract" abstract="true" class="com.bbva.pisd.lib.r008.impl.PISDR008Abstract">
+		<property name="externalApiConnector" ref="externalApiConnector"/>
+		<property name="apiConnectorBuilder" ref="apiConnectorBuilder"/>
+		<property name="internalApiConnector" ref="internalApiConnector"/>
+	</bean>
+	<bean id="applicationConfigurationService" factory-bean="applicationConfigurationServiceFactory" factory-method="getApplicationConfigurationService">
+		<constructor-arg type="org.osgi.framework.BundleContext" ref="bundleContext"/>
+	</bean>
+	<bean id="externalApiConnector" factory-bean="apiConnectorFactoryImpl" factory-method="getAPIConnector">
+		<constructor-arg index="0" type="org.osgi.framework.BundleContext" ref="bundleContext"/>
+		<constructor-arg value="false" index="1" type="boolean"/>
+	</bean>
+	<bean id="apiConnectorBuilder" factory-bean="apiConnectorFactoryImpl" factory-method="getAPIConnectorBuilder">
+		<constructor-arg index="0" type="org.osgi.framework.BundleContext" ref="bundleContext"/>
+	</bean>
+	<bean id="internalApiConnector" factory-bean="apiConnectorFactoryImpl" factory-method="getAPIConnector">
+		<constructor-arg index="0" type="org.osgi.framework.BundleContext" ref="bundleContext"/>
+	</bean>
+</beans>
