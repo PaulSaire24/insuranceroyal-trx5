@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>insuranceroyal-trx5</artifactId>
 	<groupId>com.bbva.pisd</groupId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.2.0-RELEASE</version>
 	<packaging>pom</packaging>
 	<name>insuranceroyal-trx5</name>
 	<description>Trx to get black list validation</description>
