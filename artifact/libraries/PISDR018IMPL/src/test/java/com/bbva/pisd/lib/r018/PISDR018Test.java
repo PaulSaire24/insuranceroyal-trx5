@@ -9,13 +9,13 @@ import com.bbva.pisd.dto.insurance.blacklist.BlockingCompanyDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
-import com.bbva.pisd.dto.insurance.bo.blacklist.BlackListIndicatorBO;
+import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
 import com.bbva.pisd.dto.insurance.mock.MockDTO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
-import com.bbva.pisd.lib.r011.PISDR011;
+import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r018.impl.PISDR018Impl;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class PISDR018Test {
 
 	private ApplicationConfigurationService applicationConfigurationService;
 	private MockDTO mockDTO;
-	private PISDR011 pisdr011;
+	private PISDR008 pisdr008;
 
 	@Before
 	public void setUp() {
@@ -62,13 +62,13 @@ public class PISDR018Test {
 
 		pisdR018.setApplicationConfigurationService(applicationConfigurationService);
 
-		pisdr011 = mock(PISDR011.class);
-		pisdR018.setPisdR011(pisdr011);
+		pisdr008 = mock(PISDR008.class);
+		pisdR018.setPisdR008(pisdr008);
 	}
 
 	@Test
 	public void executeBlackListValidationTestNull() {
-		LOGGER.info("PISDR003Test - Executing executeBlackListValidationTestNull...");
+		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestNull...");
 		InsuranceBlackListDTO request = null;
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
@@ -104,7 +104,7 @@ public class PISDR018Test {
 
 	@Test
 	public void executeBlackListValidationTestOK() throws IOException {
-		LOGGER.info("PISDR003Test - Executing executeBlackListValidationTestOK...");
+		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestOK...");
 		SelectionQuotationPayloadBO blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
 		SelectionQuotationPayloadBO blNegativeRimac = mockDTO.getBlackListValidationNegativeRimacMockResponse();
 		BlackListIndicatorBO bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
@@ -115,12 +115,12 @@ public class PISDR018Test {
 		request.setProduct(new InsuranceProductDTO("SALUD", null, null));
 		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
 
-		when(pisdr011.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
+		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
 
-		when(pisdr011.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
+		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 
@@ -132,11 +132,11 @@ public class PISDR018Test {
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 
-		when(pisdr011.executeGetBlackListRiskService(anyObject(), anyString())).thenReturn(blPositiveRimac);
+		when(pisdr008.executeGetBlackListRiskService(anyObject(), anyString())).thenReturn(blPositiveRimac);
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 
-		when(pisdr011.executeGetBlackListIndicatorService(anyString())).thenReturn(bliNegative);
+		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliNegative);
 		request.setTraceId(null);
 		validation = pisdR018.executeBlackListValidation(request);
 		assertEquals("", validation.getData().get(0).getId());
@@ -149,7 +149,7 @@ public class PISDR018Test {
 		validation = pisdR018.executeBlackListValidation(request);
 		assertEquals("012345678910111213141516171819202122", validation.getData().get(0).getId());
 
-		when(pisdr011.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blNegativeRimac);
+		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blNegativeRimac);
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 

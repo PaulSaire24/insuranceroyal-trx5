@@ -23,8 +23,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
-			<artifactId>PISDR011</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<artifactId>PISDR008</artifactId>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.elara</groupId>
@@ -106,7 +106,7 @@
 						<Bundle-SymbolicName>${project.artifactId}-${project.version}</Bundle-SymbolicName>
 						<Bundle-Category>library</Bundle-Category>
 						<Import-Package>
-							com.bbva.pisd.lib.r011.*;version="${osgi.version.manifest}",
+							com.bbva.pisd.lib.r008.*;version="${osgi.version.manifest}",
 							com.bbva.pisd.lib.r018.*;version="${osgi.version.manifest}",
 							com.bbva.elara.*;version="${osgi.version.manifest}",
 							org.osgi.framework;version="${osgi.version.manifest}",

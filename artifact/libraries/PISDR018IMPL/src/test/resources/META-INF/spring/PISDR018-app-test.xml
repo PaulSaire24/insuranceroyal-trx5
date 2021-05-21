@@ -4,12 +4,12 @@
 	<bean id="pisdR018Abstract" abstract="true" class="com.bbva.pisd.lib.r018.impl.PISDR018Abstract"/>
 	<bean id="pisdR018" class="com.bbva.pisd.lib.r018.impl.PISDR018Impl" parent="pisdR018Abstract">
 		<property name="applicationConfigurationService" ref="applicationConfigurationService"/>
-		<property name="pisdR011" ref="pisdR011"/>
+		<property name="pisdR008" ref="pisdR008"/>
 	</bean>
 	<bean id="applicationConfigurationService" factory-bean="applicationConfigurationServiceFactory" factory-method="getApplicationConfigurationService">
 		<constructor-arg type="org.osgi.framework.BundleContext" ref="bundleContext"/>
 	</bean>
-	<bean id="pisdR011" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="com.bbva.pisd.lib.r011.PISDR011"/>
+	<bean id="pisdR008" class="org.mockito.Mockito" factory-method="mock">
+		<constructor-arg value="com.bbva.pisd.lib.r008.PISDR008"/>
 	</bean>
 </beans>

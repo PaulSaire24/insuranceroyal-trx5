@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+	<bean id="applicationConfigurationServiceFactory" class="com.bbva.pisd.mock.ConfigurationFactoryMock"/>
+	<bean id="libraryMonitorizationAspect" class="com.bbva.pisd.mock.LibraryMonitorizationAspectMock"/>
+	<bean id="bundleContext" class="com.bbva.pisd.mock.MockBundleContext">
+		<constructor-arg>
+			<list value-type="java.lang.String"/>
+		</constructor-arg>
+	</bean>
+	<bean id="applicationConfigurationService" factory-bean="applicationConfigurationServiceFactory" factory-method="getApplicationConfigurationService">
+		<constructor-arg type="org.osgi.framework.BundleContext" ref="bundleContext" />
+	</bean>
+	<bean id="apiConnectorBuilder" factory-bean="apiConnectorFactoryImpl" factory-method="getAPIConnectorBuilder">
+		<constructor-arg index="0" type="org.osgi.framework.BundleContext" ref="bundleContext" />
+	</bean>
+	<bean id="apiConnectorFactoryImpl" class="com.bbva.pisd.lib.r008.factory.ApiConnectorFactoryMock"/>
+	<bean id="externalApiConnector" factory-bean="apiConnectorFactoryImpl" factory-method="getAPIConnector">
+		<constructor-arg index="0" type="org.osgi.framework.BundleContext" ref="bundleContext" />
+		<constructor-arg index="1" type="boolean" value="false" />
+	</bean>
+	<bean id="internalApiConnector" factory-bean="apiConnectorFactoryImpl" factory-method="getAPIConnector">
+		<constructor-arg index="0" type="org.osgi.framework.BundleContext" ref="bundleContext" />
+	</bean>
+	<bean id="mockService" class="com.bbva.pisd.mock.MockService">
+		<property name="applicationConfigurationService" ref="applicationConfigurationService" />
+	</bean>
+	<bean id="pisdR008Abstract" abstract="true" class="com.bbva.pisd.lib.r008.impl.PISDR008Abstract">
+		<property name="externalApiConnector" ref="externalApiConnector" />
+		<property name="internalApiConnector" ref="internalApiConnector" />
+		<property name="apiConnectorBuilder" ref="apiConnectorBuilder" />
+		<property name="mockService" ref="mockService" />
+	</bean>
+</beans>

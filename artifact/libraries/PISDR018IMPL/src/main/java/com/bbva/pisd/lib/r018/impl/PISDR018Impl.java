@@ -5,7 +5,7 @@ import com.bbva.pisd.dto.insurance.blacklist.BlockingCompanyDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
-import com.bbva.pisd.dto.insurance.bo.blacklist.BlackListIndicatorBO;
+import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
@@ -23,7 +23,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 	@Override
 	public EntityOutBlackListDTO executeBlackListValidation(InsuranceBlackListDTO input) {
-		LOGGER.info("***** PISDR003Impl - executeBlackListValidation START ***** input: {}", input);
+		LOGGER.info("***** PISDR018Impl - executeBlackListValidation START ***** input: {}", input);
 		if (input == null) {
 			return null;
 		}
@@ -42,12 +42,12 @@ public class PISDR018Impl extends PISDR018Abstract {
 		data.add(response);
 		out.setData(data);
 
-		LOGGER.info("***** PISDR003Impl - executeBlackListValidation END ***** out: {}", out);
+		LOGGER.info("***** PISDR018Impl - executeBlackListValidation END ***** out: {}", out);
 		return out;
 	}
 
 	private InsuranceBlackListDTO consultExternalBlackList(InsuranceBlackListDTO input) {
-		LOGGER.info("***** PISDR003Impl - consultExternalBlackList START *****");
+		LOGGER.info("***** PISDR018Impl - consultExternalBlackList START *****");
 		if (input.getBlockingCompany() == null || input.getBlockingCompany().getId() == null) {
 			input.setBlockingCompany(new BlockingCompanyDTO(PISDConstants.BLACKLIST_COMPANY_RIMAC));
 		}
@@ -74,12 +74,12 @@ public class PISDR018Impl extends PISDR018Abstract {
 			default:
 				break;
 		}
-		LOGGER.info("***** PISDR003Impl - consultExternalBlackList END ***** response: {}", response);
+		LOGGER.info("***** PISDR018Impl - consultExternalBlackList END ***** response: {}", response);
 		return response;
 	}
 
 	private IdentityDocumentDTO getValidIdentityDocument(IdentityDocumentDTO input) {
-		LOGGER.info("***** PISDR003Impl - getValidIdentityDocument START ***** input: {}", input);
+		LOGGER.info("***** PISDR018Impl - getValidIdentityDocument START ***** input: {}", input);
 		IdentityDocumentDTO out = new IdentityDocumentDTO(new DocumentTypeDTO(""), "");
 		if (input == null) {
 			return out;
@@ -90,13 +90,13 @@ public class PISDR018Impl extends PISDR018Abstract {
 		if (input.getDocumentType() != null && input.getDocumentType().getId() != null) {
 			out.getDocumentType().setId(input.getDocumentType().getId());
 		}
-		LOGGER.info("***** PISDR003Impl - getValidIdentityDocument END ***** out: {}", out);
+		LOGGER.info("***** PISDR018Impl - getValidIdentityDocument END ***** out: {}", out);
 		return out;
 	}
 
 	private InsuranceBlackListDTO getBlackListValidationRimac(String customerId, String productId,
 															  IdentityDocumentDTO document, String bltype, String traceId) {
-		LOGGER.info("***** PISDR003Impl - getBlackListValidationRimac START *****");
+		LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac START *****");
 		SelectionQuotationPayloadBO resp = null;
 		if (productId == null || document == null) {
 			return null;
@@ -108,17 +108,17 @@ public class PISDR018Impl extends PISDR018Abstract {
 		input.setTipoLista(bltype);
 		switch (productId) {
 			case PISDConstants.HEALTH_RIMAC:
-				resp = pisdR011.executeGetBlackListHealthService(input, traceId);
-				LOGGER.info("***** PISDR003Impl - getBlackListValidationRimac - SALUD - END *****");
+				resp = pisdR008.executeGetBlackListHealthService(input, traceId);
+				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - SALUD - END *****");
 				break;
 			default:
 				InsuranceBlackListDTO indicator = consultBBVABlackList(customerId);
 				if (indicator != null && indicator.getIsBlocked().equals(PISDConstants.LETTER_SI)) {
-					LOGGER.info("***** PISDR003Impl - executeBlackListValidation indicator-IsActive ***** indicator: {}", indicator);
+					LOGGER.info("***** PISDR018Impl - executeBlackListValidation indicator-IsActive ***** indicator: {}", indicator);
 					return indicator;
 				}
-				resp = pisdR011.executeGetBlackListRiskService(input, traceId);
-				LOGGER.info("***** PISDR003Impl - getBlackListValidationRimac - default - END *****");
+				resp = pisdR008.executeGetBlackListRiskService(input, traceId);
+				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - default - END *****");
 				break;
 		}
 		if (resp != null) {
@@ -135,17 +135,17 @@ public class PISDR018Impl extends PISDR018Abstract {
 			response.setIdentityDocument(document);
 			response.setBlackListType(new BlackListTypeDTO(bltype));
 		}
-		LOGGER.info("***** PISDR003Impl - getBlackListValidationRimac END ***** resp: {}", resp);
+		LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac END ***** resp: {}", resp);
 		return response;
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {
 		BlackListIndicatorBO indicator = null;
 		if (customerId != null) {
-			LOGGER.info("***** PISDR003Impl - executeBlackListValidation executeGetBlackListIndicatorService *****");
-			indicator = pisdR011.executeGetBlackListIndicatorService(customerId);
+			LOGGER.info("***** PISDR018Impl - executeBlackListValidation executeGetBlackListIndicatorService *****");
+			indicator = pisdR008.executeGetBlackListIndicatorService(customerId);
 			LOGGER.info(
-					"***** PISDR003Impl - executeBlackListValidation executeGetBlackListIndicatorService ***** indicator: {}",
+					"***** PISDR018Impl - executeBlackListValidation executeGetBlackListIndicatorService ***** indicator: {}",
 					indicator);
 		}
 		InsuranceBlackListDTO response = null;
