@@ -6,6 +6,7 @@ import com.bbva.elara.domain.transaction.ThreadContext;
 import com.bbva.elara.utility.api.connector.APIConnector;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
+import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.bo.BlackListHealthRimacBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
@@ -58,6 +59,10 @@ public class PISDR008Test {
 	private BlackListHealthRimacBO responseBlackListHealthRimac;
 	private BlackListRiskRimacBO responseBlackListRiskRimac;
 
+	private BlackListRiskRimacBO responseBlackListRiskEasyYesRimac;
+
+	private CustomerListASO customerList;
+	private static final String MESSAGE_EXCEPTION = "CONNECTION ERROR";
 	@Before
 	public void setUp() throws IOException {
 		ThreadContext.set(new Context());
@@ -82,7 +87,8 @@ public class PISDR008Test {
 		responseBlackListASO = mockDTO.getBlackListASOMockResponse();
 		responseBlackListHealthRimac = mockDTO.getBlackListHealthRimacMockResponse();
 		responseBlackListRiskRimac = mockDTO.getBlackListRiskRimacMockResponse();
-
+		responseBlackListRiskEasyYesRimac = mockDTO.getDataResponseBlackListRiskRimac();
+		customerList = mockDTO.getCustomerDataResponse();
 		when(pisdr014.executeSignatureConstruction(anyString(), anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(new SignatureAWS("", "", "", ""));
 	}
@@ -325,5 +331,28 @@ public class PISDR008Test {
 		SelectionQuotationPayloadBO validation = pisdr008.executeGetBlackListHealthService(new IdentityDataDTO("3", "L", "22222222"), "");
 		assertNull(validation);
 	}
-	
+	@Test
+	public void executeGetCustomerInformationServiceOK() {
+		LOGGER.info("PISDR008Test - Executing executeGetCustomerInformationServiceOK...");
+
+		when(internalApiConnector.getForObject(anyString(), any(), anyMap()))
+				.thenReturn(customerList);
+
+		CustomerListASO validation = pisdr008.executeGetCustomerInformation("90008603");
+		assertNotNull(validation);
+		assertNotNull(validation.getData().get(0).getBirthData().getBirthDate());
+	}
+
+	@Test
+	public void executeGetCustomerInformationServiceWithRestClientException() {
+		LOGGER.info("PISDR008Test - Executing executeGetCustomerInformationServiceWithRestClientException...");
+
+		when(internalApiConnector.getForObject(anyString(), any(), anyMap())).
+				thenThrow(new RestClientException(MESSAGE_EXCEPTION));
+
+		CustomerListASO validation = pisdr008.executeGetCustomerInformation("customerId");
+
+		assertNull(validation);
+	}
+
 }

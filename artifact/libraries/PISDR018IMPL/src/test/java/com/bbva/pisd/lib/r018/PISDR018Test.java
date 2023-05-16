@@ -4,6 +4,7 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
 
+import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.BlockingCompanyDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
@@ -49,9 +50,10 @@ public class PISDR018Test {
 	private ApplicationConfigurationService applicationConfigurationService;
 	private MockDTO mockDTO;
 	private PISDR008 pisdr008;
+	private CustomerListASO customerList;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws IOException{
 		ThreadContext.set(new Context());
 
 		mockDTO = MockDTO.getInstance();
@@ -64,6 +66,7 @@ public class PISDR018Test {
 
 		pisdr008 = mock(PISDR008.class);
 		pisdR018.setPisdR008(pisdr008);
+		customerList = mockDTO.getCustomerDataResponse();
 	}
 
 	@Test
@@ -163,6 +166,12 @@ public class PISDR018Test {
 		request.setBlackListType(new BlackListTypeDTO("99"));
 		validation = pisdR018.executeBlackListValidation(request);
 		assertEquals("99", validation.getData().get(0).getBlackListType().getId());
+
+		request.setProduct(new InsuranceProductDTO("EASYYES", null, null));
+		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
+		validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+
 	}
 	
 }

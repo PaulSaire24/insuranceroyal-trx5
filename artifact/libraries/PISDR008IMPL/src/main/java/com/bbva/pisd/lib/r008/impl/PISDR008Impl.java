@@ -2,6 +2,7 @@ package com.bbva.pisd.lib.r008.impl;
 
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
+import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListRequestRimacDTO;
 import com.bbva.pisd.dto.insurance.bo.BlackListHealthRimacBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
@@ -29,6 +30,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PISDR008Impl.class);
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String JSON_LOG = "JSON BODY TO SEND: {}";
+	private static final String CUSTOMER_ID = "customerId";
 
 	@Override
 	public BlackListIndicatorBO executeGetBlackListIndicatorService(String customerId) {
@@ -155,6 +157,25 @@ public class PISDR008Impl extends PISDR008Abstract {
 		headers.set("x-api-key", signature.getxApiKey());
 		headers.set("traceId", signature.getTraceId());
 		return headers;
+	}
+
+	@Override
+	public CustomerListASO executeGetCustomerInformation(String customerId) {
+		LOGGER.info("***** PISDR008Impl - executeGetCustomerInformation START ***** customerId: {} ", customerId);
+
+
+		Map<String, Object> pathParams = new HashMap<>();
+		pathParams.put(CUSTOMER_ID, customerId);
+
+		try {
+			CustomerListASO responseList = this.internalApiConnector.getForObject(PISDProperties.ID_API_CUSTOMER_INFORMATION.getValue(),CustomerListASO.class,pathParams);
+			LOGGER.info("***** PISDR008Impl - executeGetCustomerInformation END ***** ");
+			return responseList;
+		} catch(RestClientException e) {
+			LOGGER.info("***** PISDR008Impl - executeGetCustomerInformation ***** Exception: {}", e.getMessage());
+			this.addAdvice(PISDErrors.ERROR_CONNECTION_VALIDATE_CUSTOMER_SERVICE.getAdviceCode());
+			return null;
+		}
 	}
 
 	private HttpHeaders createHttpHeaders() {

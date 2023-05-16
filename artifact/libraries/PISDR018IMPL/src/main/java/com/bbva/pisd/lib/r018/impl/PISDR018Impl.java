@@ -1,5 +1,6 @@
 package com.bbva.pisd.lib.r018.impl;
 
+import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.BlockingCompanyDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
@@ -11,11 +12,16 @@ import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
+import com.bbva.pisd.dto.insurance.utils.PISDErrors;
+import com.bbva.pisd.dto.insurance.utils.PISDValidation;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class PISDR018Impl extends PISDR018Abstract {
 
@@ -117,6 +123,12 @@ public class PISDR018Impl extends PISDR018Abstract {
 					LOGGER.info("***** PISDR018Impl - executeBlackListValidation indicator-IsActive ***** indicator: {}", indicator);
 					return indicator;
 				}
+				if(productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)){
+					input.setProducto(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
+					CustomerListASO customerList = this.pisdR008.executeGetCustomerInformation(customerId);
+					validateQueryCustomerResponse(customerList);
+					input.setFechaNacimiento(LocalDate.parse(customerList.getData().get(0).getBirthData().getBirthDate()));
+				}
 				resp = pisdR008.executeGetBlackListRiskService(input, traceId);
 				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - default - END *****");
 				break;
@@ -171,5 +183,9 @@ public class PISDR018Impl extends PISDR018Abstract {
 		}
 		return resp;
 	}
-
+	private void validateQueryCustomerResponse(CustomerListASO customerList) {
+		if (isEmpty(customerList.getData())) {
+			throw PISDValidation.build(PISDErrors.ERROR_CONNECTION_VALIDATE_CUSTOMER_SERVICE);
+		}
+	}
 }
