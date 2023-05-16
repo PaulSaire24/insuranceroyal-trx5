@@ -14,7 +14,6 @@ import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.dto.insurance.utils.PISDErrors;
 import com.bbva.pisd.dto.insurance.utils.PISDValidation;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

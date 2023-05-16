@@ -18,6 +18,7 @@ import com.bbva.pisd.dto.insurance.mock.MockDTO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r018.impl.PISDR018Impl;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -103,6 +104,7 @@ public class PISDR018Test {
 		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
+
 	}
 
 	@Test
