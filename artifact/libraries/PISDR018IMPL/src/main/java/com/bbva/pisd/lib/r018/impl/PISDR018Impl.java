@@ -127,6 +127,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 					input.setProducto(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
 					CustomerListASO customerList = this.pisdR008.executeGetCustomerInformation(customerId);
 					validateQueryCustomerResponse(customerList);
+					LOGGER.info("***** PISDR018Impl - executeBlackListValidation customer: {}", customerList.getData().get(0));
 					input.setFechaNacimiento(LocalDate.parse(customerList.getData().get(0).getBirthData().getBirthDate()));
 				}
 				resp = pisdR008.executeGetBlackListRiskService(input, traceId);
