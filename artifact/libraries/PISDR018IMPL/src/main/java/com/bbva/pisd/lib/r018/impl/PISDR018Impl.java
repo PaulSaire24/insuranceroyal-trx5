@@ -14,7 +14,6 @@ import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.dto.insurance.utils.PISDErrors;
 import com.bbva.pisd.dto.insurance.utils.PISDValidation;
-import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +126,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 					input.setProducto(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
 					CustomerListASO customerList = this.pisdR008.executeGetCustomerInformation(customerId);
 					validateQueryCustomerResponse(customerList);
-					input.setFechaNacimiento(LocalDate.parse(customerList.getData().get(0).getBirthData().getBirthDate()));
+					input.setFechaNacimiento(customerList.getData().get(0).getBirthData().getBirthDate());
 				}
 				resp = pisdR008.executeGetBlackListRiskService(input, traceId);
 				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - default - END *****");
