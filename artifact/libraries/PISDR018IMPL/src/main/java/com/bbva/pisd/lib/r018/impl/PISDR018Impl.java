@@ -183,7 +183,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 		return resp;
 	}
 	private void validateQueryCustomerResponse(CustomerListASO customerList) {
-		if (isEmpty(customerList.getData())) {
+		if (customerList == null || isEmpty(customerList.getData())) {
 			throw PISDValidation.build(PISDErrors.ERROR_CONNECTION_VALIDATE_CUSTOMER_SERVICE);
 		}
 	}
