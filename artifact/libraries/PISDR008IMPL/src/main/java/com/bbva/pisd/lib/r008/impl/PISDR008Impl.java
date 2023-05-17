@@ -178,10 +178,4 @@ public class PISDR008Impl extends PISDR008Abstract {
 		}
 	}
 
-	private HttpHeaders createHttpHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		return headers;
-	}
-
 }

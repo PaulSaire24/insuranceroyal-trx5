@@ -111,26 +111,23 @@ public class PISDR018Impl extends PISDR018Abstract {
 		input.setNroDocumento(document.getDocumentNumber());
 		input.setTipoDocumento(applicationConfigurationService.getProperty(document.getDocumentType().getId()));
 		input.setTipoLista(bltype);
-		switch (productId) {
-			case PISDConstants.HEALTH_RIMAC:
-				resp = pisdR008.executeGetBlackListHealthService(input, traceId);
-				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - SALUD - END *****");
-				break;
-			default:
-				InsuranceBlackListDTO indicator = consultBBVABlackList(customerId);
-				if (indicator != null && indicator.getIsBlocked().equals(PISDConstants.LETTER_SI)) {
-					LOGGER.info("***** PISDR018Impl - executeBlackListValidation indicator-IsActive ***** indicator: {}", indicator);
-					return indicator;
-				}
-				if(productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)){
-					input.setProducto(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
-					CustomerListASO customerList = this.pisdR008.executeGetCustomerInformation(customerId);
-					validateQueryCustomerResponse(customerList);
-					input.setFechaNacimiento(customerList.getData().get(0).getBirthData().getBirthDate());
-				}
-				resp = pisdR008.executeGetBlackListRiskService(input, traceId);
-				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - default - END *****");
-				break;
+		if(productId.equals(PISDConstants.HEALTH_RIMAC)) {
+			resp = pisdR008.executeGetBlackListHealthService(input, traceId);
+			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - SALUD - END *****");}
+		else{
+			InsuranceBlackListDTO indicator = consultBBVABlackList(customerId);
+			if (indicator != null && indicator.getIsBlocked().equals(PISDConstants.LETTER_SI)) {
+				LOGGER.info("***** PISDR018Impl - executeBlackListValidation indicator-IsActive ***** indicator: {}", indicator);
+				return indicator;
+			}
+			if (productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)) {
+				input.setProducto(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
+				CustomerListASO customerList = this.pisdR008.executeGetCustomerInformation(customerId);
+				validateQueryCustomerResponse(customerList);
+				input.setFechaNacimiento(customerList.getData().get(0).getBirthData().getBirthDate());
+			}
+			resp = pisdR008.executeGetBlackListRiskService(input, traceId);
+			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac - default - END *****");
 		}
 		if (resp != null) {
 			response = new InsuranceBlackListDTO();
