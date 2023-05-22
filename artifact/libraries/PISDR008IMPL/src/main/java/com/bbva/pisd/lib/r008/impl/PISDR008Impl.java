@@ -13,6 +13,7 @@ import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.dto.insurance.utils.PISDErrors;
 import com.bbva.pisd.dto.insurance.utils.PISDProperties;
 import com.bbva.pisd.lib.r008.impl.util.JsonHelper;
+import com.bbva.pisd.lib.r008.impl.util.RimacExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -24,6 +25,8 @@ import javax.ws.rs.HttpMethod;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public class PISDR008Impl extends PISDR008Abstract {
@@ -104,7 +107,11 @@ public class PISDR008Impl extends PISDR008Abstract {
 				}
 			} catch(RestClientException e) {
 				LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Exception: {}", e.getMessage());
-				this .addAdvice(PISDErrors.ERROR_TO_CONNECT_SERVICE_BLACKLISTRISK_RIMAC.getAdviceCode());
+				RimacExceptionHandler exceptionHandler = new RimacExceptionHandler();
+				output = exceptionHandler.handler(e);
+				if (isNull(output)){
+					this .addAdvice(PISDErrors.ERROR_TO_CONNECT_SERVICE_BLACKLISTRISK_RIMAC.getAdviceCode());
+				}
 			}
 		}
 
