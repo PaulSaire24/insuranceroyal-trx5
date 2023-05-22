@@ -85,7 +85,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 		SelectionQuotationPayloadBO output = null;
 
 		if (payload != null && payload.getNroDocumento() != null && payload.getTipoDocumento() != null) {
-			String uri = nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) ?
+			String uri = (nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)) ?
 					PISDProperties.URI_BLACKLIST_EASYYES.getValue() : PISDProperties.URI_BLACKLIST_RISK.getValue();
 
 			String requestJson = JsonHelper.getInstance().toJsonString(new BlackListRequestRimacDTO(payload));
@@ -96,7 +96,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 			LOGGER.info(JSON_LOG, entity.getBody());
 
 			try {
-				String apiBlackListId = nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) ?
+				String apiBlackListId = (nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)) ?
 						PISDProperties.ID_API_BLACKLISTEASYYES_RIMAC.getValue() : PISDProperties.ID_API_BLACKLISTRISK_RIMAC.getValue();
 				BlackListRiskRimacBO response = this.externalApiConnector.postForObject(apiBlackListId, entity, BlackListRiskRimacBO.class);
 				if (response != null && response.getPayload() != null && !response.getPayload().isEmpty()) {
