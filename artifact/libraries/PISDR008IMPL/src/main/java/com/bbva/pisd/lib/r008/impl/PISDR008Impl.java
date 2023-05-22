@@ -87,9 +87,8 @@ public class PISDR008Impl extends PISDR008Abstract {
 
 		SelectionQuotationPayloadBO output = null;
 
-		if (payload != null && payload.getNroDocumento() != null && payload.getTipoDocumento() != null) {
-			String uri = (nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)) ?
-					PISDProperties.URI_BLACKLIST_EASYYES.getValue() : PISDProperties.URI_BLACKLIST_RISK.getValue();
+		if (Boolean.TRUE.equals(validateDocumentoIdentidad(payload))) {
+			String uri = Boolean.TRUE.equals(validateEasyYesProduct(payload)) ? PISDProperties.URI_BLACKLIST_EASYYES.getValue() : PISDProperties.URI_BLACKLIST_RISK.getValue();
 
 			String requestJson = JsonHelper.getInstance().toJsonString(new BlackListRequestRimacDTO(payload));
 
@@ -99,8 +98,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 			LOGGER.info(JSON_LOG, entity.getBody());
 
 			try {
-				String apiBlackListId = (nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)) ?
-						PISDProperties.ID_API_BLACKLISTEASYYES_RIMAC.getValue() : PISDProperties.ID_API_BLACKLISTRISK_RIMAC.getValue();
+				String apiBlackListId = Boolean.TRUE.equals(validateEasyYesProduct(payload)) ? PISDProperties.ID_API_BLACKLISTEASYYES_RIMAC.getValue() : PISDProperties.ID_API_BLACKLISTRISK_RIMAC.getValue();
 				BlackListRiskRimacBO response = this.externalApiConnector.postForObject(apiBlackListId, entity, BlackListRiskRimacBO.class);
 				if (response != null && response.getPayload() != null && !response.getPayload().isEmpty()) {
 					output = response.getPayload().get(0);
@@ -114,10 +112,21 @@ public class PISDR008Impl extends PISDR008Abstract {
 				}
 			}
 		}
+		if (isNull(output)){
+			this .addAdvice(PISDErrors.ERROR_TO_CONNECT_SERVICE_BLACKLISTRISK_RIMAC.getAdviceCode());
+		}
 
 		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Response: {}", output);
 		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService END *****");
 		return output;
+	}
+
+	private Boolean validateEasyYesProduct(IdentityDataDTO payload){
+		return nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
+	}
+
+	private Boolean validateDocumentoIdentidad(IdentityDataDTO payload){
+		return payload != null && payload.getNroDocumento() != null && payload.getTipoDocumento() != null;
 	}
 
 	@Override
