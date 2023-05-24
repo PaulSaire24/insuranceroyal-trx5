@@ -193,18 +193,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 	private boolean validateBirthDate(CustomerListASO customerList){
 		return !isNull(customerList.getData().get(0).getBirthData()) && !isNull(customerList.getData().get(0).getBirthData().getBirthDate()) &&
-				customerList.getData().get(0).getBirthData().getBirthDate().length() == 10 && validateBirthDateFormat(customerList.getData().get(0).getBirthData().getBirthDate());
-	}
-
-	private boolean validateBirthDateFormat(String fecha) {
-		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			dateFormat.setLenient(false);
-			dateFormat.parse(fecha);
-		} catch (ParseException e) {
-			return false;
-		}
-		return true;
+				customerList.getData().get(0).getBirthData().getBirthDate().length() == 10;
 	}
 }
 
