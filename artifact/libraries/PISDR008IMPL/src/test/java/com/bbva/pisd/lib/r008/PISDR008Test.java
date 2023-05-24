@@ -275,7 +275,7 @@ public class PISDR008Test {
 	@Test
 	public void executeGetBlackListRiskServiceWithHttpServerErrorException_ErrorVIDA001() {
 		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceWithHttpServerErrorException_ErrorVIDA001...");
-		String responseBody = "{\"error\":{\"code\":\"VIDA001\",\"message\":\"Error al Validar Datos.\",\"details\":[],\"httpStatus\":400}}";
+		String responseBody = "{\"error\":{\"code\":\"VIDA001\",\"message\":\"Error al Validar Datos.\",\"details\":[\" El campo [fechaNacimiento]  debe ser mayor o igual a 18 años.\"],\"httpStatus\":400}}";
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any()))
 				.thenThrow(new HttpServerErrorException(HttpStatus.BAD_REQUEST, "",responseBody.getBytes(), StandardCharsets.UTF_8));
 
@@ -285,15 +285,14 @@ public class PISDR008Test {
 	}
 
 	@Test
-	public void executeGetBlackListRiskServiceWithHttpServerErrorException_ErrorVIDA002() {
-		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceWithHttpServerErrorException_ErrorVIDA002...");
-		String responseBody = "{\"error\":{\"code\":\"VIDA002\",\"message\":\"Error al Validar Datos.\",\"details\":[],\"httpStatus\":400}}";
+	public void executeGetBlackListRiskServiceWithHttpServerErrorException_ErrorURCOT005() {
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceWithHttpServerErrorException_ErrorURCOT005...");
+		String responseBody = "{\"error\":{\"code\":\"URCOT005\",\"message\":\"Error al Validar Datos.\",\"details\":[],\"httpStatus\":400}}";
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any()))
 				.thenThrow(new HttpServerErrorException(HttpStatus.BAD_REQUEST, "",responseBody.getBytes(), StandardCharsets.UTF_8));
 
 		SelectionQuotationPayloadBO validation = pisdr008.executeGetBlackListRiskService(new IdentityDataDTO("3", "L", "00000000"), "");
-		assertNotNull(validation);
-		assertEquals("1",validation.getStatus());
+		assertNull(validation);
 	}
 
 	@Test
@@ -309,7 +308,7 @@ public class PISDR008Test {
 	@Test
 	public void executeGetBlackListRiskServiceWithHttpClientErrorException_ErrorVIDA001() {
 		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceWithHttpClientErrorException_ErrorVIDA001...");
-		String responseBody = "{\"error\":{\"code\":\"VIDA001\",\"message\":\"Error al Validar Datos.\",\"details\":[],\"httpStatus\":400}}";
+		String responseBody = "{\"error\":{\"code\":\"VIDA001\",\"message\":\"Error al Validar Datos.\",\"details\":[\" El campo [fechaNacimiento]  debe ser mayor o igual a 18 años.\"],\"httpStatus\":400}}";
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "",responseBody.getBytes(), StandardCharsets.UTF_8));
 
@@ -319,15 +318,14 @@ public class PISDR008Test {
 	}
 
 	@Test
-	public void executeGetBlackListRiskServiceWithHttpClientErrorException_ErrorVIDA002() {
-		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceWithHttpClientErrorException_ErrorVIDA002...");
-		String responseBody = "{\"error\":{\"code\":\"VIDA002\",\"message\":\"Error al Validar Datos.\",\"details\":[],\"httpStatus\":400}}";
+	public void executeGetBlackListRiskServiceWithHttpClientErrorException_ErrorURCOT005() {
+		LOGGER.info("PISDR008Test - Executing executeGetBlackListRiskServiceWithHttpClientErrorException_ErrorURCOT005...");
+		String responseBody = "{\"error\":{\"code\":\"URCOT005\",\"message\":\"Error al Validar Datos.\",\"details\":[],\"httpStatus\":400}}";
 		when(externalApiConnector.postForObject(anyString(), anyObject(), any()))
 				.thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "",responseBody.getBytes(), StandardCharsets.UTF_8));
 
 		SelectionQuotationPayloadBO validation = pisdr008.executeGetBlackListRiskService(new IdentityDataDTO("3", "L", "00000000"), "");
-		assertNotNull(validation);
-		assertEquals("1",validation.getStatus());
+		assertNull(validation);
 	}
 
 	@Test
