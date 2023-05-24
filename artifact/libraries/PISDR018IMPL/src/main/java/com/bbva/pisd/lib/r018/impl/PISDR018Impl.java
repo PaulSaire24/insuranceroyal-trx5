@@ -17,9 +17,12 @@ import com.bbva.pisd.dto.insurance.utils.PISDValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class PISDR018Impl extends PISDR018Abstract {
@@ -34,7 +37,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 		}
 		EntityOutBlackListDTO out = null;
 		InsuranceBlackListDTO response = null;
-		List<InsuranceBlackListDTO> data = new ArrayList();
+		List<InsuranceBlackListDTO> data = new ArrayList<>();
 
 		response = consultExternalBlackList(input);
 
@@ -133,7 +136,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 			response = new InsuranceBlackListDTO();
 			if (resp.getStatus().equals(PISDConstants.BLACKLIST_BLOCKED)) {
 				response.setIsBlocked(PISDConstants.LETTER_SI);
-				response.setDescription(PISDConstants.BLACKLIST_MSJ_REJECT);
+				response.setDescription(resp.getMensaje());
 			} else {
 				response.setIsBlocked(PISDConstants.LETTER_NO);
 				response.setDescription("");
@@ -160,7 +163,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 		if (indicator != null) {
 			response = new InsuranceBlackListDTO();
 			response.setId(indicator.getIndicatorId());
-			if (indicator.getIsActive()) {
+			if (Boolean.TRUE.equals(indicator.getIsActive())) {
 				response.setDescription(PISDConstants.BLACKLIST_MSJ_REJECT);
 				response.setIsBlocked(PISDConstants.LETTER_SI);
 			} else {
@@ -183,5 +186,25 @@ public class PISDR018Impl extends PISDR018Abstract {
 		if (customerList == null || isEmpty(customerList.getData())) {
 			throw PISDValidation.build(PISDErrors.ERROR_CONNECTION_VALIDATE_CUSTOMER_SERVICE);
 		}
+		if(!validateBirthDate(customerList)){
+			throw PISDValidation.build(PISDErrors.ERROR_BIRTHDATE_BLACKLIST);
+		}
+	}
+
+	private boolean validateBirthDate(CustomerListASO customerList){
+		return !isNull(customerList.getData().get(0).getBirthData()) && !isNull(customerList.getData().get(0).getBirthData().getBirthDate()) &&
+				customerList.getData().get(0).getBirthData().getBirthDate().length() == 10 && validateBirthDateFormat(customerList.getData().get(0).getBirthData().getBirthDate());
+	}
+
+	private boolean validateBirthDateFormat(String fecha) {
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			dateFormat.setLenient(false);
+			dateFormat.parse(fecha);
+		} catch (ParseException e) {
+			return false;
+		}
+		return true;
 	}
 }
+
