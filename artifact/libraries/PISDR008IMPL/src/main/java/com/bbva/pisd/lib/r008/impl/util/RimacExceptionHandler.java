@@ -3,6 +3,7 @@ package com.bbva.pisd.lib.r008.impl.util;
 import com.bbva.pisd.dto.insurance.bo.ErrorResponseBO;
 import com.bbva.pisd.dto.insurance.bo.ErrorRimacBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+import com.bbva.pisd.dto.insurance.utils.PISDErrors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,7 +46,7 @@ public class RimacExceptionHandler {
         SelectionQuotationPayloadBO output = new SelectionQuotationPayloadBO();
         if(error.getCode().equals(ERROR_CODE_001) && !error.getDetails().isEmpty()) {
             output.setStatus(STATUS_BLOCKED);
-            output.setMensaje(error.getDetails().get(0));
+            output.setMensaje(PISDErrors.ERROR_AGE_VALIDATION_BLACKLIST.getMessage());
             return output;
         }else{
             return null;

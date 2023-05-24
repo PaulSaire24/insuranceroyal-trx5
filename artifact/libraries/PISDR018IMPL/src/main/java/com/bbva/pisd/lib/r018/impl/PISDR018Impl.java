@@ -136,7 +136,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 			response = new InsuranceBlackListDTO();
 			if (resp.getStatus().equals(PISDConstants.BLACKLIST_BLOCKED)) {
 				response.setIsBlocked(PISDConstants.LETTER_SI);
-				response.setDescription(resp.getMensaje());
+				response.setDescription("");
 			} else {
 				response.setIsBlocked(PISDConstants.LETTER_NO);
 				response.setDescription("");
@@ -164,7 +164,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 			response = new InsuranceBlackListDTO();
 			response.setId(indicator.getIndicatorId());
 			if (Boolean.TRUE.equals(indicator.getIsActive())) {
-				response.setDescription(PISDConstants.BLACKLIST_MSJ_REJECT);
+				response.setDescription("");
 				response.setIsBlocked(PISDConstants.LETTER_SI);
 			} else {
 				response.setDescription("");
