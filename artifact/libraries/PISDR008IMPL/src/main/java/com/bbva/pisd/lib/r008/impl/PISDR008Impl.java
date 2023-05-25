@@ -102,6 +102,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 				BlackListRiskRimacBO response = this.externalApiConnector.postForObject(apiBlackListId, entity, BlackListRiskRimacBO.class);
 				if (response != null && response.getPayload() != null && !response.getPayload().isEmpty()) {
 					output = response.getPayload().get(0);
+					output.setMensaje("");
 				}
 			} catch(RestClientException e) {
 				LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Exception: {}", e.getMessage());

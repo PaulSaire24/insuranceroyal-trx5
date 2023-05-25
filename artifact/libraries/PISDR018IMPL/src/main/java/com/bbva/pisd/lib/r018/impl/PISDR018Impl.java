@@ -136,7 +136,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 			response = new InsuranceBlackListDTO();
 			if (resp.getStatus().equals(PISDConstants.BLACKLIST_BLOCKED)) {
 				response.setIsBlocked(PISDConstants.LETTER_SI);
-				response.setDescription("");
+				response.setDescription(resp.getMensaje());
 			} else {
 				response.setIsBlocked(PISDConstants.LETTER_NO);
 				response.setDescription("");
