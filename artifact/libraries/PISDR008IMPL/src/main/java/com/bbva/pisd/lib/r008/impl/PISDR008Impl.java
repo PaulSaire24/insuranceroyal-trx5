@@ -113,9 +113,6 @@ public class PISDR008Impl extends PISDR008Abstract {
 				}
 			}
 		}
-		if (isNull(output)){
-			this .addAdvice(PISDErrors.ERROR_TO_CONNECT_SERVICE_BLACKLISTRISK_RIMAC.getAdviceCode());
-		}
 
 		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Response: {}", output);
 		LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService END *****");
