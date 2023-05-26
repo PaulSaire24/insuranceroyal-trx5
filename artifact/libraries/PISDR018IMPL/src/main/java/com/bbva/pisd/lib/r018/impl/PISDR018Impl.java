@@ -164,7 +164,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 			response = new InsuranceBlackListDTO();
 			response.setId(indicator.getIndicatorId());
 			if (Boolean.TRUE.equals(indicator.getIsActive())) {
-				response.setDescription(PISDConstants.BLACKLIST_MSJ_REJECT);
+				response.setDescription("");
 				response.setIsBlocked(PISDConstants.LETTER_SI);
 			} else {
 				response.setDescription("");
