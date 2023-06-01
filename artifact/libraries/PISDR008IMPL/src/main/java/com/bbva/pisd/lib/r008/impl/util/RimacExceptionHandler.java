@@ -4,10 +4,10 @@ import com.bbva.pisd.dto.insurance.bo.ErrorResponseBO;
 import com.bbva.pisd.dto.insurance.bo.ErrorRimacBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 import com.bbva.pisd.dto.insurance.utils.PISDErrors;
+import com.bbva.pisd.dto.insurance.utils.PISDValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 
 public class RimacExceptionHandler {
@@ -21,18 +21,12 @@ public class RimacExceptionHandler {
             return this.clientExceptionHandler((HttpClientErrorException) exception);
         } else {
             LOGGER.info("RimacExceptionHandler - HttpServerErrorException");
-            return this.serverExceptionHandler((HttpServerErrorException) exception);
+            throw PISDValidation.build(PISDErrors.RIMAC_SERVER_ERROR);
         }
     }
 
     private SelectionQuotationPayloadBO clientExceptionHandler(HttpClientErrorException exception) {
         LOGGER.debug("HttpClientErrorException - Response body: {}", exception.getResponseBodyAsString());
-        ErrorRimacBO errorObject = this.getErrorObject(exception.getResponseBodyAsString());
-        return this.throwingBusinessException(errorObject.getError());
-    }
-
-    private SelectionQuotationPayloadBO serverExceptionHandler(HttpServerErrorException exception) {
-        LOGGER.debug("HttpServerErrorException - Response Body: {}", exception.getResponseBodyAsString());
         ErrorRimacBO errorObject = this.getErrorObject(exception.getResponseBodyAsString());
         return this.throwingBusinessException(errorObject.getError());
     }
