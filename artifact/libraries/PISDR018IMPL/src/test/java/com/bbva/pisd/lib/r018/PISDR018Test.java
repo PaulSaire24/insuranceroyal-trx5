@@ -57,6 +57,11 @@ public class PISDR018Test {
 	private static final String DISTRICT = "DISTRICT";
 	private static final String PROVINCE = "PROVINCE";
 	private static final String DEPARTMENT = "DEPARTMENT";
+	private static final String RIMAC = "RIMAC";
+	private static final String CHUBB = "CHUBB";
+	private static final String SALUD = "SALUD";
+	private static final String VEHICULAR = "VEHICULAR";
+	private static final String EASYYES = "EASYYES";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PISDR018Test.class);
 
 	private final PISDR018Impl pisdR018 = new PISDR018Impl();
@@ -80,7 +85,7 @@ public class PISDR018Test {
 		applicationConfigurationService = mock(ApplicationConfigurationService.class);
 
 		when(applicationConfigurationService.getProperty(anyString())).thenReturn("somevalue");
-		when(applicationConfigurationService.getProperty(anyString())).thenReturn("CUSTOMER_VALIDATION_MESSAGE");
+		when(applicationConfigurationService.getProperty(CUSTOMER_VALIDATION_MESSAGE)).thenReturn(CUSTOMER_VALIDATION_MESSAGE);
 
 		pisdR018.setApplicationConfigurationService(applicationConfigurationService);
 
@@ -96,8 +101,8 @@ public class PISDR018Test {
 		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
 		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
 		request = new InsuranceBlackListDTO();
-		request.setBlockingCompany(new BlockingCompanyDTO("RIMAC"));
-		request.setProduct(new InsuranceProductDTO("SALUD", null, null));
+		request.setBlockingCompany(new BlockingCompanyDTO(RIMAC));
+		request.setProduct(new InsuranceProductDTO(SALUD, null, null));
 		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
 	}
 
@@ -137,8 +142,6 @@ public class PISDR018Test {
 		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
-
-
 	}
 
 	@Test
@@ -153,7 +156,7 @@ public class PISDR018Test {
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 
-		request.setProduct(new InsuranceProductDTO("VEHICULAR", null, null));
+		request.setProduct(new InsuranceProductDTO(VEHICULAR, null, null));
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
 
@@ -193,10 +196,17 @@ public class PISDR018Test {
 		validation = pisdR018.executeBlackListValidation(request);
 		assertEquals("99", validation.getData().get(0).getBlackListType().getId());
 
-		request.setProduct(new InsuranceProductDTO("EASYYES", null, null));
+		request.setProduct(new InsuranceProductDTO(EASYYES, null, null));
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 
+	}
+
+	@Test
+	public void executeBlackListValidationChubbCompany(){
+		request.setBlockingCompany(new BlockingCompanyDTO(CHUBB));
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNull(validation);
 	}
 
 	@Test
@@ -205,7 +215,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 	@Test
 	public void executeBlackListValidationWithDocumentTypeNullTest() {
@@ -213,7 +223,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -222,7 +232,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -231,7 +241,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -240,7 +250,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -249,7 +259,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -258,7 +268,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).setContactDetails(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -279,7 +289,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -300,7 +310,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -313,7 +323,7 @@ public class PISDR018Test {
 
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 
@@ -323,7 +333,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).setAddresses(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -342,7 +352,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).setAddresses(addressesBOList);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -351,7 +361,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).getAddresses().get(0).getLocation().setAdditionalInformation("");
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -360,7 +370,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -398,7 +408,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -436,7 +446,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
@@ -474,7 +484,7 @@ public class PISDR018Test {
 		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
-		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test (expected = BusinessException.class)
