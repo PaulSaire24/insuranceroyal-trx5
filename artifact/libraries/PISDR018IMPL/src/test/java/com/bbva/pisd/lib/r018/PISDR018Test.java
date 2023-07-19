@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 		"classpath:/META-INF/spring/PISDR018-arc.xml",
 		"classpath:/META-INF/spring/PISDR018-arc-test.xml" })
 public class PISDR018Test {
-
+	private static final String CUSTOMER_VALIDATION_MESSAGE = "CUSTOMER_VALIDATION_MESSAGE";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PISDR018Test.class);
 
 	private final PISDR018Impl pisdR018 = new PISDR018Impl();
@@ -62,12 +62,14 @@ public class PISDR018Test {
 		applicationConfigurationService = mock(ApplicationConfigurationService.class);
 
 		when(applicationConfigurationService.getProperty(anyString())).thenReturn("somevalue");
+		when(applicationConfigurationService.getProperty(anyString())).thenReturn("CUSTOMER_VALIDATION_MESSAGE");
 
 		pisdR018.setApplicationConfigurationService(applicationConfigurationService);
 
 		pisdr008 = mock(PISDR008.class);
 		pisdR018.setPisdR008(pisdr008);
 		customerList = mockDTO.getCustomerDataResponse();
+		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
 	}
 
 	@Test
@@ -76,7 +78,7 @@ public class PISDR018Test {
 		InsuranceBlackListDTO request = null;
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
-
+		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
 		request = new InsuranceBlackListDTO();
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNull(validation);
@@ -155,7 +157,7 @@ public class PISDR018Test {
 		validation = pisdR018.executeBlackListValidation(request);
 		assertEquals("012345678910111213141516171819202122", validation.getData().get(0).getId());
 
-		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blNegativeRimac);
+		when(pisdr008.executeGetBlackListRiskService(anyObject(), anyString())).thenReturn(blNegativeRimac);
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 
@@ -171,10 +173,88 @@ public class PISDR018Test {
 		assertEquals("99", validation.getData().get(0).getBlackListType().getId());
 
 		request.setProduct(new InsuranceProductDTO("EASYYES", null, null));
-		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
 		validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 
 	}
-	
+
+	@Test
+	public void executeBlackListValidationWithNotRequiredIdentityDocumentFieldsTest() throws IOException {
+		SelectionQuotationPayloadBO blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
+		BlackListIndicatorBO bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
+
+		InsuranceBlackListDTO request = new InsuranceBlackListDTO();
+		request.setBlockingCompany(new BlockingCompanyDTO("RIMAC"));
+		request.setProduct(new InsuranceProductDTO("SALUD", null, null));
+		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
+
+		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
+		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
+
+		customerList.getData().get(0).getIdentityDocuments().get(0).getDocumentType().setId(null);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+	}
+
+	@Test
+	public void executeBlackListValidationWithNotRequiredPersonalDataFieldsTest() throws IOException {
+		SelectionQuotationPayloadBO blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
+		BlackListIndicatorBO bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
+
+		InsuranceBlackListDTO request = new InsuranceBlackListDTO();
+		request.setBlockingCompany(new BlockingCompanyDTO("RIMAC"));
+		request.setProduct(new InsuranceProductDTO("SALUD", null, null));
+		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
+
+		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
+		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
+
+		customerList.getData().get(0).getGender().setId(null);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+	}
+
+	@Test
+	public void executeBlackListValidationWithNotRequiredContactDetailsFieldsTest() throws IOException {
+		SelectionQuotationPayloadBO blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
+		BlackListIndicatorBO bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
+
+		InsuranceBlackListDTO request = new InsuranceBlackListDTO();
+		request.setBlockingCompany(new BlockingCompanyDTO("RIMAC"));
+		request.setProduct(new InsuranceProductDTO("SALUD", null, null));
+		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
+
+		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
+		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
+
+		customerList.getData().get(0).setContactDetails(null);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+	}
+
+	@Test
+	public void executeBlackListValidationWithNotRequiredAddressesFieldsTest() throws IOException {
+		SelectionQuotationPayloadBO blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
+		BlackListIndicatorBO bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
+
+		InsuranceBlackListDTO request = new InsuranceBlackListDTO();
+		request.setBlockingCompany(new BlockingCompanyDTO("RIMAC"));
+		request.setProduct(new InsuranceProductDTO("SALUD", null, null));
+		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
+
+		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
+		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
+
+		customerList.getData().get(0).setAddresses(null);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(validation.getData().get(0).getDescription(), CUSTOMER_VALIDATION_MESSAGE);
+	}
 }
