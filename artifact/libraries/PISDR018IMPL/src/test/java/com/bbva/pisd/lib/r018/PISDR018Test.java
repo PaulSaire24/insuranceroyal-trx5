@@ -210,23 +210,6 @@ public class PISDR018Test {
 	}
 
 	@Test
-	public void executeBlackListValidationWithNotIdentityDocumentsTest() {
-		customerList.getData().get(0).setIdentityDocuments(null);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-	@Test
-	public void executeBlackListValidationWithDocumentTypeNullTest() {
-		customerList.getData().get(0).getIdentityDocuments().get(0).setDocumentType(null);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
 	public void executeBlackListValidationWithDocumentTypeEmptyTest() {
 		customerList.getData().get(0).getIdentityDocuments().get(0).getDocumentType().setId("");
 
@@ -245,15 +228,6 @@ public class PISDR018Test {
 	}
 
 	@Test
-	public void executeBlackListValidationWithGenderNullTest() {
-		customerList.getData().get(0).setGender(null);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
 	public void executeBlackListValidationWithGenderEmptyTest() {
 		customerList.getData().get(0).getGender().setId("");
 
@@ -263,23 +237,59 @@ public class PISDR018Test {
 	}
 
 	@Test
-	public void executeBlackListValidationWithContactDetailsNullTest() {
+	public void executeBlackListValidationWithFirstNameEmptyTest() {
+		customerList.getData().get(0).setFirstName("");
 
-		customerList.getData().get(0).setContactDetails(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
-	public void executeBlackListValidationWithNotRequiredEmailTest() {
+	public void executeBlackListValidationWithLastNameEmptyTest() {
+		customerList.getData().get(0).setLastName("");
 
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
+	}
+
+	@Test
+	public void executeBlackListValidationWithEmptyContactDetailsTest() {
+		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
+		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
+	}
+
+	@Test
+	public void executeBlackListValidationWithNotCompleteContactDetailsTest() {
+		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
+		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
+		contactDetailsBOList.add(contactDetailsBOPhone);
+		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
+	}
+
+
+	@Test
+	public void executeBlackListValidationWithNotRequiredEmailTest() {
 		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
-		ContactTypeBO contactTypeBO = new ContactTypeBO();
-		contactTypeBO.setId(EMAIL);
-		contactDetailsBOEmail.setContactType(contactTypeBO);
+		ContactTypeBO contactTypeBOEmail = new ContactTypeBO();
+		contactTypeBOEmail.setId(EMAIL);
+		contactDetailsBOEmail.setContact("");
+		contactDetailsBOEmail.setContactType(contactTypeBOEmail);
 
 		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
+		ContactTypeBO contactTypeBOPhone = new ContactTypeBO();
+		contactTypeBOPhone.setId(MOBILE_NUMBER);
+		contactDetailsBOPhone.setContact("999888666");
+		contactDetailsBOPhone.setContactType(contactTypeBOPhone);
 
 		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
 		contactDetailsBOList.add(contactDetailsBOEmail);
@@ -294,13 +304,17 @@ public class PISDR018Test {
 
 	@Test
 	public void executeBlackListValidationWithNotRequiredPhoneTest() {
+		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
+		ContactTypeBO contactTypeBOEmail = new ContactTypeBO();
+		contactTypeBOEmail.setId(EMAIL);
+		contactDetailsBOEmail.setContact("example@examplel.com");
+		contactDetailsBOEmail.setContactType(contactTypeBOEmail);
 
 		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
-		ContactTypeBO contactTypeBO = new ContactTypeBO();
-		contactTypeBO.setId(MOBILE_NUMBER);
-		contactDetailsBOPhone.setContactType(contactTypeBO);
-
-		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
+		ContactTypeBO contactTypeBOPhone = new ContactTypeBO();
+		contactTypeBOPhone.setId(MOBILE_NUMBER);
+		contactDetailsBOPhone.setContact("");
+		contactDetailsBOPhone.setContactType(contactTypeBOPhone);
 
 		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
 		contactDetailsBOList.add(contactDetailsBOPhone);
@@ -314,23 +328,9 @@ public class PISDR018Test {
 	}
 
 	@Test
-	public void executeBlackListValidationWithNotCompleteContactDetailsTest() {
-
-		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
-		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
-		contactDetailsBOList.add(contactDetailsBOPhone);
-		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-
-	@Test
-	public void executeBlackListValidationWithAddressesNullTest() {
-
-		customerList.getData().get(0).setAddresses(null);
+	public void executeBlackListValidationEmptyAddressesTest() {
+		List<AddressesBO> addressesBOList = new ArrayList<>();
+		customerList.getData().get(0).setAddresses(addressesBOList);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
@@ -356,18 +356,16 @@ public class PISDR018Test {
 	}
 
 	@Test
-	public void executeBlackListValidationWithAdditionalInformationEmptyTest(){
-
-		customerList.getData().get(0).getAddresses().get(0).getLocation().setAdditionalInformation("");
+	public void executeBlackListValidationWithAdditionalInformationNullTest(){
+		customerList.getData().get(0).getAddresses().get(0).getLocation().setAdditionalInformation(null);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
 	}
 
 	@Test
-	public void executeBlackListValidationWithNotGeographicGroupsTest(){
-
-		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
+	public void executeBlackListValidationWithAdditionalInformationEmptyTest(){
+		customerList.getData().get(0).getAddresses().get(0).getLocation().setAdditionalInformation("");
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
@@ -405,7 +403,7 @@ public class PISDR018Test {
 		List<AddressesBO> addressesBOList = new ArrayList<>();
 		addressesBOList.add(addressesBO);
 
-		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
+		customerList.getData().get(0).setAddresses(addressesBOList);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
@@ -443,7 +441,7 @@ public class PISDR018Test {
 		List<AddressesBO> addressesBOList = new ArrayList<>();
 		addressesBOList.add(addressesBO);
 
-		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
+		customerList.getData().get(0).setAddresses(addressesBOList);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
@@ -481,7 +479,7 @@ public class PISDR018Test {
 		List<AddressesBO> addressesBOList = new ArrayList<>();
 		addressesBOList.add(addressesBO);
 
-		customerList.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
+		customerList.getData().get(0).setAddresses(addressesBOList);
 		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
 		assertNotNull(validation);
 		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());

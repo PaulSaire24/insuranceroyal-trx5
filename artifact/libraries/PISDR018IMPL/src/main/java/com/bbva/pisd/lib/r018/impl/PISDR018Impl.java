@@ -167,64 +167,50 @@ public class PISDR018Impl extends PISDR018Abstract {
 	}
 
 	private boolean validateIdentityDocument(CustomerBO customer){
-		return !Objects.isNull(customer.getIdentityDocuments()) && !customer.getIdentityDocuments().isEmpty() &&
-				!Objects.isNull(customer.getIdentityDocuments().get(0).getDocumentNumber()) && !customer.getIdentityDocuments().get(0).getDocumentNumber().isEmpty() &&
-				!Objects.isNull(customer.getIdentityDocuments().get(0).getDocumentType()) && !Objects.isNull(customer.getIdentityDocuments().get(0).getDocumentType().getId()) &&
+		return  !customer.getIdentityDocuments().get(0).getDocumentNumber().isEmpty() &&
 				!customer.getIdentityDocuments().get(0).getDocumentType().getId().isEmpty();
 	}
 
 	private boolean validatePersonalData(CustomerBO customer){
-		return !Objects.isNull((customer.getFirstName())) && !customer.getFirstName().isEmpty()  && !Objects.isNull(customer.getLastName()) &&
-				!customer.getLastName().isEmpty() && !Objects.isNull(customer.getSecondLastName()) && !customer.getSecondLastName().isEmpty() &&
-				!Objects.isNull(customer.getGender()) && !Objects.isNull(customer.getGender().getId()) && !customer.getGender().getId().isEmpty();
+		return !customer.getFirstName().isEmpty()  && !customer.getLastName().isEmpty() && !customer.getGender().getId().isEmpty();
 	}
 
 	private boolean validateContactDetails(CustomerBO customer){
-		if(Objects.isNull(customer.getContactDetails()) || customer.getContactDetails().isEmpty() ||
-				customer.getContactDetails().size() < 2){
+		if(customer.getContactDetails().isEmpty() || customer.getContactDetails().size() < 2){
 			return false;
 		}
 
 		ContactDetailsBO celular = customer.getContactDetails().stream().filter(
-						c -> !Objects.isNull(c.getContactType()) && !Objects.isNull(c.getContactType().getId()) &&
-								MOBILE_NUMBER.equals(c.getContactType().getId())).findFirst().
+						c -> MOBILE_NUMBER.equals(c.getContactType().getId())).findFirst().
 				orElse(null);
 		ContactDetailsBO correo = customer.getContactDetails().stream().filter(
-						c -> !Objects.isNull(c.getContactType()) && !Objects.isNull(c.getContactType().getId()) &&
-								EMAIL.equals(c.getContactType().getId())).findFirst().
+						c -> EMAIL.equals(c.getContactType().getId())).findFirst().
 				orElse(null);
 
-		return !Objects.isNull(celular) && !Objects.isNull(correo) && !Objects.isNull(celular.getContact()) &&
-				!Objects.isNull(correo.getContact()) && !celular.getContact().isEmpty() && !correo.getContact().isEmpty();
+		return  !celular.getContact().isEmpty() && !correo.getContact().isEmpty();
 	}
 
 	private boolean validateAddress(CustomerBO customer){
-		if(Objects.isNull(customer.getAddresses()) || customer.getAddresses().isEmpty() ||
-				Objects.isNull(customer.getAddresses().get(0).getLocation()) ||
-				Objects.isNull(customer.getAddresses().get(0).getLocation().getGeographicGroups()) ||
-				customer.getAddresses().get(0).getLocation().getGeographicGroups().size() < 3 ||
+		if(customer.getAddresses().isEmpty() || customer.getAddresses().get(0).getLocation().getGeographicGroups().size() < 3 ||
 				Objects.isNull(customer.getAddresses().get(0).getLocation().getAdditionalInformation()) ||
 				customer.getAddresses().get(0).getLocation().getAdditionalInformation().isEmpty()){
 			return false;
 		}
 
 		GeographicGroupsBO district = customer.getAddresses().get(0).getLocation().getGeographicGroups().stream().filter(
-						a -> !Objects.isNull(a.getGeographicGroupType()) && !Objects.isNull(a.getGeographicGroupType().getId()) &&
-								DISTRICT.equals(a.getGeographicGroupType().getId())).findFirst().
+						a -> DISTRICT.equals(a.getGeographicGroupType().getId())).findFirst().
 				orElse(null);
 		GeographicGroupsBO province = customer.getAddresses().get(0).getLocation().getGeographicGroups().stream().filter(
-						a -> !Objects.isNull(a.getGeographicGroupType()) && !Objects.isNull(a.getGeographicGroupType().getId()) &&
-								PROVINCE.equals(a.getGeographicGroupType().getId())).findFirst().
+						a -> PROVINCE.equals(a.getGeographicGroupType().getId())).findFirst().
 				orElse(null);
 		GeographicGroupsBO department = customer.getAddresses().get(0).getLocation().getGeographicGroups().stream().filter(
-						a -> !Objects.isNull(a.getGeographicGroupType()) && !Objects.isNull(a.getGeographicGroupType().getId()) &&
-								DEPARTMENT.equals(a.getGeographicGroupType().getId())).findFirst().
+						a -> DEPARTMENT.equals(a.getGeographicGroupType().getId())).findFirst().
 				orElse(null);
 
 		return !Objects.isNull(district) && !Objects.isNull(province) && !Objects.isNull(department) &&
-				!district.getName().isEmpty() && !Objects.isNull(district.getName()) &&
-				!province.getName().isEmpty() && !Objects.isNull(province.getName()) &&
-				!department.getName().isEmpty() && !Objects.isNull(department.getName());
+				!Objects.isNull(district.getName()) && !district.getName().isEmpty() &&
+				!Objects.isNull(province.getName()) && !province.getName().isEmpty() &&
+				!Objects.isNull(department.getName()) && !department.getName().isEmpty();
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {
