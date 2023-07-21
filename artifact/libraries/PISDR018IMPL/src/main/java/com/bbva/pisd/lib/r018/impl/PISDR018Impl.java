@@ -187,7 +187,8 @@ public class PISDR018Impl extends PISDR018Abstract {
 						c -> EMAIL.equals(c.getContactType().getId())).findFirst().
 				orElse(null);
 
-		return  !celular.getContact().isEmpty() && !correo.getContact().isEmpty();
+		return  !Objects.isNull(celular) && !celular.getContact().isEmpty() &&
+				!Objects.isNull(correo) && !correo.getContact().isEmpty();
 	}
 
 	private boolean validateAddress(CustomerBO customer){

@@ -303,6 +303,24 @@ public class PISDR018Test {
 	}
 
 	@Test
+	public void executeBlackListValidationWithEmailNullTest() {
+
+		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
+		ContactTypeBO contactTypeBOPhone = new ContactTypeBO();
+		contactTypeBOPhone.setId(MOBILE_NUMBER);
+		contactDetailsBOPhone.setContact("999888666");
+		contactDetailsBOPhone.setContactType(contactTypeBOPhone);
+
+		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
+		contactDetailsBOList.add(contactDetailsBOPhone);
+
+		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
+	}
+	@Test
 	public void executeBlackListValidationWithNotRequiredPhoneTest() {
 		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
 		ContactTypeBO contactTypeBOEmail = new ContactTypeBO();
@@ -318,6 +336,24 @@ public class PISDR018Test {
 
 		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
 		contactDetailsBOList.add(contactDetailsBOPhone);
+		contactDetailsBOList.add(contactDetailsBOEmail);
+
+		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
+
+		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		assertNotNull(validation);
+		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
+	}
+
+	@Test
+	public void executeBlackListValidationWithPhoneNullTest() {
+		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
+		ContactTypeBO contactTypeBOEmail = new ContactTypeBO();
+		contactTypeBOEmail.setId(EMAIL);
+		contactDetailsBOEmail.setContact("example@examplel.com");
+		contactDetailsBOEmail.setContactType(contactTypeBOEmail);
+
+		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
 		contactDetailsBOList.add(contactDetailsBOEmail);
 
 		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
