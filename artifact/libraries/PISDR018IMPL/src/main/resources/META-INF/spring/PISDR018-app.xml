@@ -3,5 +3,10 @@
 		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 	<bean id="pisdR018" class="com.bbva.pisd.lib.r018.impl.PISDR018Impl" parent="pisdR018Abstract">
 		<property name="pisdR008" ref="pisdR008"/>
+		<property name="mapperHelper" ref="mapperHelper" />
+	</bean>
+	<bean id="mapperHelper" class="com.bbva.pisd.lib.r018.impl.util.MapperHelper">
+		<property name="applicationConfigurationService" ref="applicationConfigurationService"/>
+		<property name="pisdR008" ref="pisdR008" />
 	</bean>
 </beans>

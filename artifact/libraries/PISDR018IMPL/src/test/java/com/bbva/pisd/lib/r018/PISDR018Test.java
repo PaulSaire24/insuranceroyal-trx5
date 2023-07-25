@@ -1,41 +1,39 @@
 package com.bbva.pisd.lib.r018;
 
-import com.bbva.apx.exception.business.BusinessException;
-import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
-import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.BlockingCompanyDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
-import com.bbva.pisd.dto.insurance.bo.GeographicGroupTypeBO;
-import com.bbva.pisd.dto.insurance.bo.GeographicGroupsBO;
-import com.bbva.pisd.dto.insurance.bo.AddressesBO;
-import com.bbva.pisd.dto.insurance.bo.LocationBO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
-import com.bbva.pisd.dto.insurance.bo.ContactTypeBO;
-import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
+import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
+
 import com.bbva.pisd.dto.insurance.mock.MockDTO;
+
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
+
 import com.bbva.pisd.lib.r018.impl.PISDR018Impl;
+
+import com.bbva.pisd.lib.r018.impl.util.MapperHelper;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.junit.runner.RunWith;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -51,55 +49,32 @@ import static org.mockito.Mockito.when;
 		"classpath:/META-INF/spring/PISDR018-arc.xml",
 		"classpath:/META-INF/spring/PISDR018-arc-test.xml" })
 public class PISDR018Test {
-	private static final String CUSTOMER_VALIDATION_MESSAGE = "CUSTOMER_VALIDATION_MESSAGE";
-	private static final String MOBILE_NUMBER = "MOBILE_NUMBER";
-	private static final String EMAIL = "EMAIL";
-	private static final String DISTRICT = "DISTRICT";
-	private static final String PROVINCE = "PROVINCE";
-	private static final String DEPARTMENT = "DEPARTMENT";
 	private static final String RIMAC = "RIMAC";
-	private static final String CHUBB = "CHUBB";
 	private static final String SALUD = "SALUD";
-	private static final String VEHICULAR = "VEHICULAR";
-	private static final String EASYYES = "EASYYES";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PISDR018Test.class);
 
 	private final PISDR018Impl pisdR018 = new PISDR018Impl();
 
-	private ApplicationConfigurationService applicationConfigurationService;
+	private PISDR008 pisdR008;
+
+	private MapperHelper mapperHelper;
+
 	private MockDTO mockDTO;
-	private PISDR008 pisdr008;
-	private CustomerListASO customerList;
-	private SelectionQuotationPayloadBO blPositiveRimac;
-	private BlackListIndicatorBO bliPositive;
-	private SelectionQuotationPayloadBO blNegativeRimac;
-	private BlackListIndicatorBO bliNegative;
+
 	private InsuranceBlackListDTO request;
 
 	@Before
-	public void setUp() throws IOException{
+	public void setUp() {
 		ThreadContext.set(new Context());
+
+		pisdR008 = mock(PISDR008.class);
+		pisdR018.setPisdR008(pisdR008);
+
+		mapperHelper = mock(MapperHelper.class);
+		pisdR018.setMapperHelper(mapperHelper);
 
 		mockDTO = MockDTO.getInstance();
 
-		applicationConfigurationService = mock(ApplicationConfigurationService.class);
-
-		when(applicationConfigurationService.getProperty(anyString())).thenReturn("somevalue");
-		when(applicationConfigurationService.getProperty(CUSTOMER_VALIDATION_MESSAGE)).thenReturn(CUSTOMER_VALIDATION_MESSAGE);
-
-		pisdR018.setApplicationConfigurationService(applicationConfigurationService);
-
-		pisdr008 = mock(PISDR008.class);
-		pisdR018.setPisdR008(pisdr008);
-		customerList = mockDTO.getCustomerDataResponse();
-		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
-
-		blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
-		bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
-		blNegativeRimac = mockDTO.getBlackListValidationNegativeRimacMockResponse();
-		bliNegative = mockDTO.getBlackListValidationNegativeASOMockResponse();
-		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
-		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
 		request = new InsuranceBlackListDTO();
 		request.setBlockingCompany(new BlockingCompanyDTO(RIMAC));
 		request.setProduct(new InsuranceProductDTO(SALUD, null, null));
@@ -107,430 +82,89 @@ public class PISDR018Test {
 	}
 
 	@Test
-	public void executeBlackListValidationTestNull() {
-		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestNull...");
-		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(null);
-		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(null);
-		request = null;
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
-		request = new InsuranceBlackListDTO();
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setBlockingCompany(new BlockingCompanyDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setBlockingCompany(new BlockingCompanyDTO(PISDConstants.BLACKLIST_COMPANY_RIMAC));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setProduct(new InsuranceProductDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setProduct(new InsuranceProductDTO(PISDConstants.HEALTH_RIMAC, null, null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setIdentityDocument(new IdentityDocumentDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO(null), null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
+	public void executeBlackListValidationHealthProduct() {
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject())).thenReturn(new InsuranceBlackListDTO());
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
 	}
 
 	@Test
-	public void executeBlackListValidationTestOK() {
-		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestOK...");
-		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
+	public void executeBlackListValidationIneligibleCustomer() {
+		this.request.getProduct().setId("VIDA");
 
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		when(this.pisdR008.executeGetBlackListIndicatorService(anyString())).thenReturn(new BlackListIndicatorBO());
+
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_SI);
+
+		when(this.mapperHelper.createResponseToIneligibleCustomer(anyObject())).thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
 		assertNotNull(validation);
-
-		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
-		request.setProduct(new InsuranceProductDTO(VEHICULAR, null, null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-
-		request.setCustomerId("000");
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
-		when(pisdr008.executeGetBlackListRiskService(anyObject(), anyString())).thenReturn(blPositiveRimac);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
-		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliNegative);
-		request.setTraceId(null);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("", validation.getData().get(0).getId());
-
-		request.setTraceId("123");
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("123", validation.getData().get(0).getId());
-
-		request.setTraceId("012345678910111213141516171819202122232425");
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("012345678910111213141516171819202122", validation.getData().get(0).getId());
-
-		when(pisdr008.executeGetBlackListRiskService(anyObject(), anyString())).thenReturn(blNegativeRimac);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("3", validation.getData().get(0).getBlackListType().getId());
-
-		request.setBlackListType(new BlackListTypeDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("3", validation.getData().get(0).getBlackListType().getId());
-
-		request.setBlackListType(new BlackListTypeDTO("99"));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("99", validation.getData().get(0).getBlackListType().getId());
-
-		request.setProduct(new InsuranceProductDTO(EASYYES, null, null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
 
 	}
 
 	@Test
-	public void executeBlackListValidationChubbCompany(){
-		request.setBlockingCompany(new BlockingCompanyDTO(CHUBB));
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
+	public void executeBlackListValidationEasyyesProduct() throws IOException {
+		this.request.getProduct().setId("EASYYES");
+
+		when(this.pisdR008.executeGetBlackListIndicatorService(anyString())).thenReturn(new BlackListIndicatorBO());
+
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_NO);
+
+		when(this.mapperHelper.createResponseToIneligibleCustomer(anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		IdentityDataDTO identityData = new IdentityDataDTO();
+		identityData.setNroDocumento("documentNumber");
+		identityData.setTipoDocumento("DNI");
+		identityData.setTipoLista("tipoLista");
+
+		when(this.mapperHelper.createBlackListRimacRequest(anyObject(), anyString())).thenReturn(identityData);
+
+		CustomerListASO customerList = this.mockDTO.getCustomerDataResponse();
+
+		when(this.pisdR008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
+
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject(), anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
 	}
 
 	@Test
-	public void executeBlackListValidationWithDocumentTypeEmptyTest() {
-		customerList.getData().get(0).getIdentityDocuments().get(0).getDocumentType().setId("");
+	public void executeBlackListValidationOtherProduct() {
+		this.request.getProduct().setId("VEHICULAR");
 
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_NO);
+
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject(), anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
 		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
 	}
 
-	@Test
-	public void executeBlackListValidationWithDocumentNumberEmptyTest() {
-		customerList.getData().get(0).getIdentityDocuments().get(0).setDocumentNumber("");
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithGenderEmptyTest() {
-		customerList.getData().get(0).getGender().setId("");
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithFirstNameEmptyTest() {
-		customerList.getData().get(0).setFirstName("");
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithLastNameEmptyTest() {
-		customerList.getData().get(0).setLastName("");
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithEmptyContactDetailsTest() {
-		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
-		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithNotCompleteContactDetailsTest() {
-		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
-		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
-		contactDetailsBOList.add(contactDetailsBOPhone);
-		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-
-	@Test
-	public void executeBlackListValidationWithNotRequiredEmailTest() {
-		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
-		ContactTypeBO contactTypeBOEmail = new ContactTypeBO();
-		contactTypeBOEmail.setId(EMAIL);
-		contactDetailsBOEmail.setContact("");
-		contactDetailsBOEmail.setContactType(contactTypeBOEmail);
-
-		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
-		ContactTypeBO contactTypeBOPhone = new ContactTypeBO();
-		contactTypeBOPhone.setId(MOBILE_NUMBER);
-		contactDetailsBOPhone.setContact("999888666");
-		contactDetailsBOPhone.setContactType(contactTypeBOPhone);
-
-		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
-		contactDetailsBOList.add(contactDetailsBOEmail);
-		contactDetailsBOList.add(contactDetailsBOPhone);
-
-		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithEmailNullTest() {
-
-		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
-		ContactTypeBO contactTypeBOPhone = new ContactTypeBO();
-		contactTypeBOPhone.setId(MOBILE_NUMBER);
-		contactDetailsBOPhone.setContact("999888666");
-		contactDetailsBOPhone.setContactType(contactTypeBOPhone);
-
-		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
-		contactDetailsBOList.add(contactDetailsBOPhone);
-
-		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-	@Test
-	public void executeBlackListValidationWithNotRequiredPhoneTest() {
-		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
-		ContactTypeBO contactTypeBOEmail = new ContactTypeBO();
-		contactTypeBOEmail.setId(EMAIL);
-		contactDetailsBOEmail.setContact("example@examplel.com");
-		contactDetailsBOEmail.setContactType(contactTypeBOEmail);
-
-		ContactDetailsBO contactDetailsBOPhone = new ContactDetailsBO();
-		ContactTypeBO contactTypeBOPhone = new ContactTypeBO();
-		contactTypeBOPhone.setId(MOBILE_NUMBER);
-		contactDetailsBOPhone.setContact("");
-		contactDetailsBOPhone.setContactType(contactTypeBOPhone);
-
-		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
-		contactDetailsBOList.add(contactDetailsBOPhone);
-		contactDetailsBOList.add(contactDetailsBOEmail);
-
-		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithPhoneNullTest() {
-		ContactDetailsBO contactDetailsBOEmail = new ContactDetailsBO();
-		ContactTypeBO contactTypeBOEmail = new ContactTypeBO();
-		contactTypeBOEmail.setId(EMAIL);
-		contactDetailsBOEmail.setContact("example@examplel.com");
-		contactDetailsBOEmail.setContactType(contactTypeBOEmail);
-
-		List<ContactDetailsBO> contactDetailsBOList = new ArrayList<>();
-		contactDetailsBOList.add(contactDetailsBOEmail);
-
-		customerList.getData().get(0).setContactDetails(contactDetailsBOList);
-
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationEmptyAddressesTest() {
-		List<AddressesBO> addressesBOList = new ArrayList<>();
-		customerList.getData().get(0).setAddresses(addressesBOList);
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithNotCompleteGeographicGroupsTest(){
-
-		AddressesBO addressesBO = new AddressesBO();
-		LocationBO locationBO = new LocationBO();
-		GeographicGroupsBO district = new GeographicGroupsBO();
-		List<GeographicGroupsBO> geographicGroupsBOList = new ArrayList<>();
-		geographicGroupsBOList.add(district);
-		locationBO.setGeographicGroups(geographicGroupsBOList);
-		addressesBO.setLocation(locationBO);
-		List<AddressesBO> addressesBOList = new ArrayList<>();
-		addressesBOList.add(addressesBO);
-
-		customerList.getData().get(0).setAddresses(addressesBOList);
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithAdditionalInformationNullTest(){
-		customerList.getData().get(0).getAddresses().get(0).getLocation().setAdditionalInformation(null);
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithAdditionalInformationEmptyTest(){
-		customerList.getData().get(0).getAddresses().get(0).getLocation().setAdditionalInformation("");
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithNotDistrictTest(){
-		AddressesBO addressesBO = new AddressesBO();
-		LocationBO locationBO = new LocationBO();
-		GeographicGroupsBO district = new GeographicGroupsBO();
-		GeographicGroupsBO province = new GeographicGroupsBO();
-		GeographicGroupsBO department = new GeographicGroupsBO();
-		GeographicGroupTypeBO geographicGroupTypeBODistrict = new GeographicGroupTypeBO();
-		geographicGroupTypeBODistrict.setId(DISTRICT);
-		district.setGeographicGroupType(geographicGroupTypeBODistrict);
-		district.setName("");
-
-		GeographicGroupTypeBO geographicGroupTypeBOProvince = new GeographicGroupTypeBO();
-		geographicGroupTypeBOProvince.setId(PROVINCE);
-		province.setGeographicGroupType(geographicGroupTypeBOProvince);
-		province.setName("LIMA");
-
-		GeographicGroupTypeBO geographicGroupTypeBODistrictDepartment = new GeographicGroupTypeBO();
-		geographicGroupTypeBODistrictDepartment.setId(DEPARTMENT);
-		department.setGeographicGroupType(geographicGroupTypeBODistrictDepartment);
-		department.setName("LIMA");
-
-		List<GeographicGroupsBO> geographicGroupsBOList = new ArrayList<>();
-		geographicGroupsBOList.add(district);
-		geographicGroupsBOList.add(province);
-		geographicGroupsBOList.add(department);
-
-		locationBO.setGeographicGroups(geographicGroupsBOList);
-		addressesBO.setLocation(locationBO);
-		List<AddressesBO> addressesBOList = new ArrayList<>();
-		addressesBOList.add(addressesBO);
-
-		customerList.getData().get(0).setAddresses(addressesBOList);
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithNotProvinceTest(){
-		AddressesBO addressesBO = new AddressesBO();
-		LocationBO locationBO = new LocationBO();
-		GeographicGroupsBO district = new GeographicGroupsBO();
-		GeographicGroupsBO province = new GeographicGroupsBO();
-		GeographicGroupsBO department = new GeographicGroupsBO();
-		GeographicGroupTypeBO geographicGroupTypeBOProvince = new GeographicGroupTypeBO();
-		geographicGroupTypeBOProvince.setId(PROVINCE);
-		province.setGeographicGroupType(geographicGroupTypeBOProvince);
-		province.setName("");
-
-		GeographicGroupTypeBO geographicGroupTypeBODistrict = new GeographicGroupTypeBO();
-		geographicGroupTypeBODistrict.setId(DISTRICT);
-		district.setGeographicGroupType(geographicGroupTypeBODistrict);
-		district.setName("LIMA");
-
-		GeographicGroupTypeBO geographicGroupTypeBODistrictDepartment = new GeographicGroupTypeBO();
-		geographicGroupTypeBODistrictDepartment.setId(DEPARTMENT);
-		department.setGeographicGroupType(geographicGroupTypeBODistrictDepartment);
-		department.setName("LIMA");
-
-		List<GeographicGroupsBO> geographicGroupsBOList = new ArrayList<>();
-		geographicGroupsBOList.add(district);
-		geographicGroupsBOList.add(province);
-		geographicGroupsBOList.add(department);
-
-		locationBO.setGeographicGroups(geographicGroupsBOList);
-		addressesBO.setLocation(locationBO);
-		List<AddressesBO> addressesBOList = new ArrayList<>();
-		addressesBOList.add(addressesBO);
-
-		customerList.getData().get(0).setAddresses(addressesBOList);
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test
-	public void executeBlackListValidationWithNotDepartmentTest(){
-		AddressesBO addressesBO = new AddressesBO();
-		LocationBO locationBO = new LocationBO();
-		GeographicGroupsBO district = new GeographicGroupsBO();
-		GeographicGroupsBO province = new GeographicGroupsBO();
-		GeographicGroupsBO department = new GeographicGroupsBO();
-		GeographicGroupTypeBO setGeographicGroupTypeDepartment = new GeographicGroupTypeBO();
-		setGeographicGroupTypeDepartment.setId(DEPARTMENT);
-		department.setGeographicGroupType(setGeographicGroupTypeDepartment);
-		department.setName("");
-
-		GeographicGroupTypeBO geographicGroupTypeBODistrict = new GeographicGroupTypeBO();
-		geographicGroupTypeBODistrict.setId(DISTRICT);
-		district.setGeographicGroupType(geographicGroupTypeBODistrict);
-		district.setName("LIMA");
-
-		GeographicGroupTypeBO geographicGroupTypeBODistrictProvince = new GeographicGroupTypeBO();
-		geographicGroupTypeBODistrictProvince.setId(PROVINCE);
-		province.setGeographicGroupType(geographicGroupTypeBODistrictProvince);
-		province.setName("LIMA");
-
-		List<GeographicGroupsBO> geographicGroupsBOList = new ArrayList<>();
-		geographicGroupsBOList.add(district);
-		geographicGroupsBOList.add(province);
-		geographicGroupsBOList.add(department);
-
-		locationBO.setGeographicGroups(geographicGroupsBOList);
-		addressesBO.setLocation(locationBO);
-		List<AddressesBO> addressesBOList = new ArrayList<>();
-		addressesBOList.add(addressesBO);
-
-		customerList.getData().get(0).setAddresses(addressesBOList);
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-		assertEquals(CUSTOMER_VALIDATION_MESSAGE, validation.getData().get(0).getDescription());
-	}
-
-	@Test (expected = BusinessException.class)
-	public void executeBlackListValidationWithCustomerListResponseNull(){
-		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(null);
-		pisdR018.executeBlackListValidation(request);
-	}
-
-	@Test (expected = BusinessException.class)
-	public void executeBlackListValidationWithBirtdateCustomerListResponseNull(){
-		request.setProduct(new InsuranceProductDTO("EASYYES", null, null));
-		customerList.getData().get(0).setBirthData(null);
-		pisdR018.executeBlackListValidation(request);
-	}
 }
