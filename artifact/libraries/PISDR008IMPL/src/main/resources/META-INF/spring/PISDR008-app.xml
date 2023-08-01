@@ -2,10 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:osgi="http://www.springframework.org/schema/osgi" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 	<bean id="pisdR008" class="com.bbva.pisd.lib.r008.impl.PISDR008Impl" parent="pisdR008Abstract">
-		<property name="mockService" ref="mockService" />
 		<property name="pisdR014" ref="pisdR014"/>
-	</bean>
-	<bean id="mockService" class="com.bbva.pisd.mock.MockService">
-		<property name="applicationConfigurationService" ref="applicationConfigurationService" />
 	</bean>
 </beans>

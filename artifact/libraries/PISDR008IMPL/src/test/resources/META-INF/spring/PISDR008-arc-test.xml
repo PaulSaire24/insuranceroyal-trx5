@@ -22,13 +22,9 @@
 	<bean id="internalApiConnector" factory-bean="apiConnectorFactoryImpl" factory-method="getAPIConnector">
 		<constructor-arg index="0" type="org.osgi.framework.BundleContext" ref="bundleContext" />
 	</bean>
-	<bean id="mockService" class="com.bbva.pisd.mock.MockService">
-		<property name="applicationConfigurationService" ref="applicationConfigurationService" />
-	</bean>
 	<bean id="pisdR008Abstract" abstract="true" class="com.bbva.pisd.lib.r008.impl.PISDR008Abstract">
 		<property name="externalApiConnector" ref="externalApiConnector" />
 		<property name="internalApiConnector" ref="internalApiConnector" />
 		<property name="apiConnectorBuilder" ref="apiConnectorBuilder" />
-		<property name="mockService" ref="mockService" />
 	</bean>
 </beans>

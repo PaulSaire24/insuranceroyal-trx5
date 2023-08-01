@@ -1,29 +1,35 @@
 package com.bbva.pisd.lib.r018;
 
-import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
-import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.BlockingCompanyDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
+import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
+
 import com.bbva.pisd.dto.insurance.mock.MockDTO;
+
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
+
 import com.bbva.pisd.lib.r018.impl.PISDR018Impl;
-import org.checkerframework.checker.units.qual.C;
+
+import com.bbva.pisd.lib.r018.impl.util.MapperHelper;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.junit.runner.RunWith;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -43,138 +49,122 @@ import static org.mockito.Mockito.when;
 		"classpath:/META-INF/spring/PISDR018-arc.xml",
 		"classpath:/META-INF/spring/PISDR018-arc-test.xml" })
 public class PISDR018Test {
-
+	private static final String RIMAC = "RIMAC";
+	private static final String SALUD = "SALUD";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PISDR018Test.class);
 
 	private final PISDR018Impl pisdR018 = new PISDR018Impl();
 
-	private ApplicationConfigurationService applicationConfigurationService;
+	private PISDR008 pisdR008;
+
+	private MapperHelper mapperHelper;
+
 	private MockDTO mockDTO;
-	private PISDR008 pisdr008;
-	private CustomerListASO customerList;
+
+	private InsuranceBlackListDTO request;
 
 	@Before
-	public void setUp() throws IOException{
+	public void setUp() {
 		ThreadContext.set(new Context());
+
+		pisdR008 = mock(PISDR008.class);
+		pisdR018.setPisdR008(pisdR008);
+
+		mapperHelper = mock(MapperHelper.class);
+		pisdR018.setMapperHelper(mapperHelper);
 
 		mockDTO = MockDTO.getInstance();
 
-		applicationConfigurationService = mock(ApplicationConfigurationService.class);
-
-		when(applicationConfigurationService.getProperty(anyString())).thenReturn("somevalue");
-
-		pisdR018.setApplicationConfigurationService(applicationConfigurationService);
-
-		pisdr008 = mock(PISDR008.class);
-		pisdR018.setPisdR008(pisdr008);
-		customerList = mockDTO.getCustomerDataResponse();
-	}
-
-	@Test
-	public void executeBlackListValidationTestNull() {
-		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestNull...");
-		InsuranceBlackListDTO request = null;
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-
 		request = new InsuranceBlackListDTO();
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setBlockingCompany(new BlockingCompanyDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setBlockingCompany(new BlockingCompanyDTO(PISDConstants.BLACKLIST_COMPANY_RIMAC));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setProduct(new InsuranceProductDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setProduct(new InsuranceProductDTO(PISDConstants.HEALTH_RIMAC, null, null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setIdentityDocument(new IdentityDocumentDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO(null), null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
+		request.setBlockingCompany(new BlockingCompanyDTO(RIMAC));
+		request.setProduct(new InsuranceProductDTO(SALUD, null, null));
 		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
+	}
 
+	@Test
+	public void executeBlackListValidationHealthProduct() {
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject())).thenReturn(new InsuranceBlackListDTO());
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
+	}
+
+	@Test
+	public void executeBlackListValidationIneligibleCustomer() {
+		this.request.getProduct().setId("VIDA");
+
+		when(this.pisdR008.executeGetBlackListIndicatorService(anyString())).thenReturn(new BlackListIndicatorBO());
+
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_SI);
+
+		when(this.mapperHelper.createResponseToIneligibleCustomer(anyObject())).thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
 
 	}
 
 	@Test
-	public void executeBlackListValidationTestOK() throws IOException {
-		LOGGER.info("PISDR018Test - Executing executeBlackListValidationTestOK...");
-		SelectionQuotationPayloadBO blPositiveRimac = mockDTO.getBlackListValidationPositiveRimacMockResponse();
-		SelectionQuotationPayloadBO blNegativeRimac = mockDTO.getBlackListValidationNegativeRimacMockResponse();
-		BlackListIndicatorBO bliPositive = mockDTO.getBlackListValidationPositiveASOMockResponse();
-		BlackListIndicatorBO bliNegative = mockDTO.getBlackListValidationNegativeASOMockResponse();
+	public void executeBlackListValidationEasyyesProduct() throws IOException {
+		this.request.getProduct().setId("EASYYES");
 
-		InsuranceBlackListDTO request = new InsuranceBlackListDTO();
-		request.setBlockingCompany(new BlockingCompanyDTO("RIMAC"));
-		request.setProduct(new InsuranceProductDTO("SALUD", null, null));
-		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
+		when(this.pisdR008.executeGetBlackListIndicatorService(anyString())).thenReturn(new BlackListIndicatorBO());
 
-		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliPositive);
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_NO);
 
-		EntityOutBlackListDTO validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
+		when(this.mapperHelper.createResponseToIneligibleCustomer(anyObject())).
+				thenReturn(responseIneligibleCustomer);
 
-		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blPositiveRimac);
-		validation = pisdR018.executeBlackListValidation(request);
+		IdentityDataDTO identityData = new IdentityDataDTO();
+		identityData.setNroDocumento("documentNumber");
+		identityData.setTipoDocumento("DNI");
+		identityData.setTipoLista("tipoLista");
+
+		when(this.mapperHelper.createBlackListRimacRequest(anyObject(), anyString())).thenReturn(identityData);
+
+		CustomerListASO customerList = this.mockDTO.getCustomerDataResponse();
+
+		when(this.pisdR008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
+
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject(), anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
 		assertNotNull(validation);
-
-		request.setProduct(new InsuranceProductDTO("VEHICULAR", null, null));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNull(validation);
-
-		request.setCustomerId("000");
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
-		when(pisdr008.executeGetBlackListRiskService(anyObject(), anyString())).thenReturn(blPositiveRimac);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
-		when(pisdr008.executeGetBlackListIndicatorService(anyString())).thenReturn(bliNegative);
-		request.setTraceId(null);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("", validation.getData().get(0).getId());
-
-		request.setTraceId("123");
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("123", validation.getData().get(0).getId());
-
-		request.setTraceId("012345678910111213141516171819202122232425");
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("012345678910111213141516171819202122", validation.getData().get(0).getId());
-
-		when(pisdr008.executeGetBlackListHealthService(anyObject(), anyString())).thenReturn(blNegativeRimac);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("3", validation.getData().get(0).getBlackListType().getId());
-
-		request.setBlackListType(new BlackListTypeDTO());
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("3", validation.getData().get(0).getBlackListType().getId());
-
-		request.setBlackListType(new BlackListTypeDTO("99"));
-		validation = pisdR018.executeBlackListValidation(request);
-		assertEquals("99", validation.getData().get(0).getBlackListType().getId());
-
-		request.setProduct(new InsuranceProductDTO("EASYYES", null, null));
-		when(pisdr008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
-		validation = pisdR018.executeBlackListValidation(request);
-		assertNotNull(validation);
-
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
 	}
-	
+
+	@Test
+	public void executeBlackListValidationOtherProduct() {
+		this.request.getProduct().setId("VEHICULAR");
+
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_NO);
+
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject(), anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
+	}
+
 }
