@@ -175,6 +175,21 @@ public class MapperHelperTest {
     }
 
     @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientAvailable_RucDocument() {
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.insuranceBlackList.getIdentityDocument().getDocumentType().setId("RUC");
+
+        InsuranceBlackListDTO validation = this.mapperHelper.createResponseBlackListBBVAService(this.insuranceBlackList, rimacNegativeResponse, null);
+
+        assertNotNull(validation.getIsBlocked());
+        assertNotNull(validation.getDescription());
+
+        assertEquals(PISDConstants.LETTER_NO, validation.getIsBlocked());
+        assertEquals("", validation.getDescription());
+    }
+
+    @Test
     public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_MissingIdentityDocument() {
         String messageValidation = "Revisar nro de documento";
 
