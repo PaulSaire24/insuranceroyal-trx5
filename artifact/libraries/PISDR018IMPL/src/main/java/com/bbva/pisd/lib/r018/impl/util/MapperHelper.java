@@ -32,6 +32,7 @@ public class MapperHelper {
 
     private static final String WHITESPACE_CHARACTER = "";
     private static final String HYPHEN_CHARACTER = "-";
+    private static final String RUC_DOCUMENT = "RUC";
     private ApplicationConfigurationService applicationConfigurationService;
 
     private PISDR008 pisdR008;
@@ -93,12 +94,17 @@ public class MapperHelper {
     private InsuranceBlackListDTO validateChannels(final InsuranceBlackListDTO requestBody, CustomerListASO customerInformation) {
         String channels = this.applicationConfigurationService.getProperty("channels-to-check-custInfo");
         List<String> channelsList = asList(channels.split(HYPHEN_CHARACTER));
-        if(channelsList.contains(requestBody.getSaleChannelId())) {
+
+        String documentType = requestBody.getIdentityDocument().getDocumentType().getId();
+
+        /* Se añade validacion de RUC */
+        if(channelsList.contains(requestBody.getSaleChannelId()) && !RUC_DOCUMENT.equals(documentType)) {
             String messageValidation = this.getMessageValidation(customerInformation, requestBody);
             if(!isEmpty(messageValidation)) {
                 return this.createResponseMissingCustomerInformation(requestBody, messageValidation);
             }
         }
+
         InsuranceBlackListDTO responseBlackList = this.commonCreateResponseBlackList(requestBody);
         responseBlackList.setIsBlocked(PISDConstants.LETTER_NO);
         responseBlackList.setDescription("");
@@ -108,7 +114,6 @@ public class MapperHelper {
     private String getMessageValidation(CustomerListASO customerInformation, final InsuranceBlackListDTO requestBody) {
         if(isNull(customerInformation)) {
             customerInformation = this.pisdR008.executeGetCustomerInformation(requestBody.getCustomerId());
-            return this.validateMissingCustomerData(customerInformation);
         }
         return this.validateMissingCustomerData(customerInformation);
     }
