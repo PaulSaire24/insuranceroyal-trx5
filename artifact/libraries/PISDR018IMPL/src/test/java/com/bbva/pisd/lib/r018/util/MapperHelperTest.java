@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -363,6 +364,104 @@ public class MapperHelperTest {
 
         assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
         assertEquals(messageValidation, validation.getDescription());
+    }
+
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_MissingIdentityDocument_AndCustomerBasicInformation() {
+
+        String messageValidationIdentityDocs = "Revisar nro de documento";
+        String messageValidationBasicInfo = "Revisar nombres completos";
+
+        when(this.applicationConfigurationService.getProperty("identity-document-message-key")).
+                thenReturn(messageValidationIdentityDocs);
+
+        when(this.applicationConfigurationService.getProperty("customer-name-message-key")).
+                thenReturn(messageValidationBasicInfo);
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.customerInformation.getData().get(0).getIdentityDocuments().get(0).setDocumentNumber(null);
+
+        this.customerInformation.getData().get(0).setFirstName(null);
+
+        //Missing document number and first name
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertNotNull(validation.getIsBlocked());
+        assertNotNull(validation.getDescription());
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(String.join("\n", Arrays.asList(messageValidationIdentityDocs,messageValidationBasicInfo)),
+                validation.getDescription());
+    }
+
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_MissingCustomerBasicInformation_AndAddress() {
+
+        String messageValidationBasicInfo = "Revisar sexo";
+        String messageValidationAddress = "Revisar datos de direccion";
+
+        when(this.applicationConfigurationService.getProperty("gender-message-key")).
+                thenReturn(messageValidationBasicInfo);
+
+        when(this.applicationConfigurationService.getProperty("address-message-key"))
+                .thenReturn(messageValidationAddress);
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.customerInformation.getData().get(0).getGender().setId(null);
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).setName(null);
+
+        //Missing gender and address
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertNotNull(validation.getIsBlocked());
+        assertNotNull(validation.getDescription());
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(String.join("\n", Arrays.asList(messageValidationBasicInfo,messageValidationAddress)),
+                validation.getDescription());
+    }
+
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_MissingAllRequiredCustomerInformation() {
+
+        String messageValidationIdentityDocs = "Revisar nro de documento";
+        String messageValidationBasicInfo = "Revisar sexo";
+        String messageValidationAddress = "Revisar datos de direccion";
+        String messageValidationContactDetails = "Revisar datos de contacto";
+
+        when(this.applicationConfigurationService.getProperty("identity-document-message-key")).
+                thenReturn(messageValidationIdentityDocs);
+
+        when(this.applicationConfigurationService.getProperty("gender-message-key")).
+                thenReturn(messageValidationBasicInfo);
+
+        when(this.applicationConfigurationService.getProperty("contact-detail-message-key")).
+                thenReturn(messageValidationContactDetails);
+
+        when(this.applicationConfigurationService.getProperty("address-message-key"))
+                .thenReturn(messageValidationAddress);
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.customerInformation.getData().get(0).getIdentityDocuments().get(0).setDocumentNumber(null);
+        this.customerInformation.getData().get(0).getGender().setId(null);
+        this.customerInformation.getData().get(0).getContactDetails().get(1).setContact(null);
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).setName(null);
+
+        //Missing document number, gender, contact details and address
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertNotNull(validation.getIsBlocked());
+        assertNotNull(validation.getDescription());
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(String.join("\n", Arrays.asList(messageValidationIdentityDocs, messageValidationBasicInfo,
+                        messageValidationContactDetails,messageValidationAddress)), validation.getDescription());
     }
 
     @Test
