@@ -18,6 +18,7 @@ import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class MapperHelper {
 
     private static final String WHITESPACE_CHARACTER = "";
     private static final String HYPHEN_CHARACTER = "-";
+    private static final String LINE_BREAK = "\n";
     private static final String RUC_DOCUMENT = "RUC";
     private ApplicationConfigurationService applicationConfigurationService;
 
@@ -140,22 +142,29 @@ public class MapperHelper {
         if(nonNull(customerInformation)) {
             CustomerBO customer = customerInformation.getData().get(0);
 
+            List<String> validationMessages = new ArrayList<>();
             String messageValidateIdentityDocument = this.validateIdentityDocument(customer);
             if(!isEmpty(messageValidateIdentityDocument)) {
-                return messageValidateIdentityDocument;
+                validationMessages.add(messageValidateIdentityDocument);
             }
             String messageValidateCustomerBasicInformation = this.validateCustomerBasicInformation(customer);
             if(!isEmpty(messageValidateCustomerBasicInformation)) {
-                return messageValidateCustomerBasicInformation;
+                validationMessages.add(messageValidateCustomerBasicInformation);
             }
             String messageContactDetails = this.validateContactDetails(customer);
             if(!isEmpty(messageContactDetails)) {
-                return messageContactDetails;
+                validationMessages.add(messageContactDetails);
             }
             String messageAddress = this.validateAddress(customer);
             if(!isEmpty(messageAddress)) {
-                return messageAddress;
+                validationMessages.add(messageAddress);
             }
+
+            /* Se concatenan los mensajes de validación con salto de línea */
+            if(!validationMessages.isEmpty()){
+                return String.join(LINE_BREAK,validationMessages);
+            }
+
             return WHITESPACE_CHARACTER;
         }
         return WHITESPACE_CHARACTER;
