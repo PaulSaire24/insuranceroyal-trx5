@@ -3,20 +3,23 @@ package com.bbva.pisd.lib.r018.impl.util;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
+
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
-
+import com.bbva.pisd.dto.insurance.bo.LocationBO;
 import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
-import com.bbva.pisd.dto.insurance.bo.GeographicGroupsBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
+
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,25 +210,20 @@ public class MapperHelper {
     }
 
     private String validateAddress(final CustomerBO customer){
-        Map<String, String> location = customer.getAddresses().get(0).getLocation().getGeographicGroups().
-                stream().
-                filter(geographicGroupsBO -> addressKey(geographicGroupsBO.getGeographicGroupType().getId())).
-                collect(groupingBy(
-                        geographicGroup -> geographicGroup.getGeographicGroupType().getName(),
-                        mapping(GeographicGroupsBO::getName, new SingletonStringCollector())
-                ));
 
-        boolean isntSomeAddressInformationMissing = location.entrySet().stream().noneMatch(entry -> isEmpty(entry.getValue()));
+        final String message = this.applicationConfigurationService.getProperty("address-message-key");
 
-        if(!location.isEmpty() && isntSomeAddressInformationMissing) {
-            return WHITESPACE_CHARACTER;
+        final String defaultValue = "xdepurar";
+
+        LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
+
+        if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
+                defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
+            return message;
         } else {
-            return this.applicationConfigurationService.getProperty("address-message-key");
+            return WHITESPACE_CHARACTER;
         }
-    }
 
-    private boolean addressKey(final String geographicGroupType) {
-        return "DEPARTMENT".equals(geographicGroupType) || "PROVINCE".equals(geographicGroupType) || "DISTRICT".equals(geographicGroupType);
     }
 
     public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
