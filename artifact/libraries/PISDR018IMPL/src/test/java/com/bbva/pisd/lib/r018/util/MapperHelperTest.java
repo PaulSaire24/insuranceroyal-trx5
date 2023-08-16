@@ -321,9 +321,9 @@ public class MapperHelperTest {
 
         this.insuranceBlackList.setSaleChannelId("PC");
 
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).setName(null);
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(0).setName("XDEPURAR");
 
-        //Missing department
+        //XDEPURAR address information
         InsuranceBlackListDTO validation = this.mapperHelper.
                 createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
 
@@ -333,32 +333,9 @@ public class MapperHelperTest {
         assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
         assertEquals(messageValidation, validation.getDescription());
 
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).setName("LIMA");
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(3).setName(null);
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 
-        //Missing province
-        validation = this.mapperHelper.
-                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
-
-        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
-        assertEquals(messageValidation, validation.getDescription());
-
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).setName("LIMA");
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(3).setName("LIMA");
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(4).setName(null);
-
-        //Missing district
-        validation = this.mapperHelper.
-                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
-
-        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
-        assertEquals(messageValidation, validation.getDescription());
-
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).getGeographicGroupType().setId("UNCATEGORIZED");
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(3).getGeographicGroupType().setId("UNCATEGORIZED");
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(4).getGeographicGroupType().setId("UNCATEGORIZED");
-
-        //Empty address
+        //Customer information without geopraphic group
         validation = this.mapperHelper.
                 createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
 
@@ -411,7 +388,7 @@ public class MapperHelperTest {
         this.insuranceBlackList.setSaleChannelId("PC");
 
         this.customerInformation.getData().get(0).getGender().setId(null);
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).setName(null);
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 
         //Missing gender and address
         InsuranceBlackListDTO validation = this.mapperHelper.
@@ -450,7 +427,7 @@ public class MapperHelperTest {
         this.customerInformation.getData().get(0).getIdentityDocuments().get(0).setDocumentNumber(null);
         this.customerInformation.getData().get(0).getGender().setId(null);
         this.customerInformation.getData().get(0).getContactDetails().get(1).setContact(null);
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(2).setName(null);
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 
         //Missing document number, gender, contact details and address
         InsuranceBlackListDTO validation = this.mapperHelper.
