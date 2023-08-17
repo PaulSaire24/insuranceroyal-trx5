@@ -146,6 +146,7 @@ public class MapperHelper {
             CustomerBO customer = customerInformation.getData().get(0);
 
             List<String> validationMessages = new ArrayList<>();
+
             String messageValidateIdentityDocument = this.validateIdentityDocument(customer);
             if(!isEmpty(messageValidateIdentityDocument)) {
                 validationMessages.add(messageValidateIdentityDocument);
@@ -165,9 +166,11 @@ public class MapperHelper {
 
             /* Se concatenan los mensajes de validación con salto de línea */
             if(!validationMessages.isEmpty()){
-                return String.join(LINE_BREAK,validationMessages);
+                final String missingInformation = String.join(LINE_BREAK,validationMessages);
+                final String introductionMessage = this.applicationConfigurationService.getProperty("introduction-message");
+                final String closingMessage = this.applicationConfigurationService.getProperty("closing-message");
+                return introductionMessage + LINE_BREAK + missingInformation + LINE_BREAK + closingMessage;
             }
-
             return WHITESPACE_CHARACTER;
         }
         return WHITESPACE_CHARACTER;
@@ -183,11 +186,17 @@ public class MapperHelper {
     }
 
     private String validateCustomerBasicInformation(final CustomerBO customer){
+        StringBuilder message = new StringBuilder();
         if(isEmpty(customer.getFirstName()) || isEmpty(customer.getLastName())) {
-            return this.applicationConfigurationService.getProperty("customer-name-message-key");
+            final String nameMessage = this.applicationConfigurationService.getProperty("customer-name-message-key");
+            message.append(nameMessage);
         }
-        return isEmpty(customer.getGender().getId()) ?
-                this.applicationConfigurationService.getProperty("gender-message-key") : WHITESPACE_CHARACTER;
+        if(isEmpty(customer.getGender().getId())) {
+            final String genderMessage = this.applicationConfigurationService.getProperty("gender-message-key");
+            if(message.length() != 0) message.append(LINE_BREAK);
+            message.append(genderMessage);
+        }
+        return message.toString();
     }
 
     private String validateContactDetails(final CustomerBO customer){
@@ -200,13 +209,20 @@ public class MapperHelper {
                         mapping(ContactDetailsBO::getContact, new SingletonStringCollector())
                 ));
 
-        boolean isntSomeContactDetailMissing =  contactDetails.entrySet().stream().noneMatch(entry -> isEmpty(entry.getValue()));
+        StringBuilder message = new StringBuilder();
 
-        if(!contactDetails.isEmpty() && isntSomeContactDetailMissing) {
-            return WHITESPACE_CHARACTER;
-        } else {
-            return this.applicationConfigurationService.getProperty("contact-detail-message-key");
+        if(isEmpty(contactDetails.get("MOBILE_NUMBER"))) {
+            final String cellphoneMessage = this.applicationConfigurationService.getProperty("cellphone-message-key");
+            message.append(cellphoneMessage);
         }
+
+        if(isEmpty(contactDetails.get("EMAIL"))) {
+            final String emailMessge = this.applicationConfigurationService.getProperty("email-message-key");
+            if(message.length() != 0) message.append(LINE_BREAK);
+            message.append(emailMessge);
+        }
+
+        return message.toString();
     }
 
     private String validateAddress(final CustomerBO customer){
