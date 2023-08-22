@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.bbva.pisd</groupId>
 		<artifactId>LIBRARIES-insuranceroyal-trx5</artifactId>
-		<version>0.12.5</version>
+		<version>0.12.6</version>
 	</parent>
 	<groupId>com.bbva.pisd</groupId>
 	<artifactId>PISDR018IMPL</artifactId>
 	<name>PISDR018IMPL</name>
-	<version>0.12.5</version>
+	<version>0.12.6</version>
 	<packaging>bundle</packaging>
 	<description>Business logic for blacklist service</description>
 	<properties>
@@ -19,12 +19,12 @@
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
 			<artifactId>PISDR018</artifactId>
-			<version>0.12.5</version>
+			<version>0.12.6</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.pisd</groupId>
 			<artifactId>PISDR008</artifactId>
-			<version>0.12.5</version>
+			<version>0.12.6</version>
 		</dependency>
 		<dependency>
 			<groupId>com.bbva.elara</groupId>
