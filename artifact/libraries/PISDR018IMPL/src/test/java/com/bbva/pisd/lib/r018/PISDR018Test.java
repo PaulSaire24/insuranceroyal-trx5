@@ -85,6 +85,9 @@ public class PISDR018Test {
 	public void executeBlackListValidationHealthProduct() {
 		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject())).thenReturn(new InsuranceBlackListDTO());
 
+		this.request.setProduct(null);
+		this.request.setBlockingCompany(null);
+
 		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
 
 		assertNotNull(validation);
