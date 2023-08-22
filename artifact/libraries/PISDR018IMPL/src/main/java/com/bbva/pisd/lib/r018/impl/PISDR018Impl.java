@@ -5,10 +5,12 @@ import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
+import com.bbva.pisd.dto.insurance.blacklist.BlockingCompanyDTO;
 
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 
+import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
@@ -29,6 +31,8 @@ public class PISDR018Impl extends PISDR018Abstract {
 	public EntityOutBlackListDTO executeBlackListValidation(final InsuranceBlackListDTO input) {
 		LOGGER.info("***** PISDR018Impl - executeBlackListValidation START ***** input: {}", input);
 
+		this.validateBlockingCompany(input);
+		this.validateProduct(input);
 		this.validateBlackListType(input);
 
 		InsuranceBlackListDTO response = this.validateCustomerAvailability(input);
@@ -42,6 +46,18 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 		LOGGER.info("***** PISDR018Impl - executeBlackListValidation END ***** out: {}", out);
 		return out;
+	}
+
+	private void validateBlockingCompany(final InsuranceBlackListDTO input) {
+		if(isNull(input.getBlockingCompany()) || isNull(input.getBlockingCompany().getId())) {
+			input.setBlockingCompany(new BlockingCompanyDTO(PISDConstants.BLACKLIST_COMPANY_RIMAC));
+		}
+	}
+
+	private void validateProduct(InsuranceBlackListDTO input) {
+		if(isNull(input.getProduct()) || isNull(input.getProduct().getId())) {
+			input.setProduct(new InsuranceProductDTO(PISDConstants.HEALTH_RIMAC, null, null));
+		}
 	}
 
 	private void validateBlackListType(final InsuranceBlackListDTO input) {
