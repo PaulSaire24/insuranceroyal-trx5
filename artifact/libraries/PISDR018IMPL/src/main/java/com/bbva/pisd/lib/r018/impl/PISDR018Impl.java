@@ -86,18 +86,22 @@ public class PISDR018Impl extends PISDR018Abstract {
 				return indicator;
 			}
 			CustomerListASO customerInformation = null;
-			if (productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)) {
+			if (isVidadinamicoOrEasyYes(productId)) {
 				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac | Life validation *****");
 
 				customerInformation = this.pisdR008.executeGetCustomerInformation(requestBody.getCustomerId());
 
-				identityData.setProducto(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
+				identityData.setProducto(productId);
 				identityData.setFechaNacimiento(customerInformation.getData().get(0).getBirthData().getBirthDate());
 			}
 			SelectionQuotationPayloadBO rimacResponse = this.pisdR008.executeGetBlackListRiskService(identityData, requestBody.getTraceId());
 			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac END *****");
 			return this.mapperHelper.createResponseBlackListBBVAService(requestBody, rimacResponse, customerInformation);
 		}
+	}
+
+	private static boolean isVidadinamicoOrEasyYes(String productId) {
+		return productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) || productId.equals("VIDADINAMICO");
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {

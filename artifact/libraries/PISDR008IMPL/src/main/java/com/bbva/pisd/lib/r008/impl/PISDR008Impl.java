@@ -34,6 +34,8 @@ import javax.ws.rs.HttpMethod;
 
 import java.nio.charset.StandardCharsets;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
@@ -86,7 +88,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 		String uri = "";
 		String apiBlackListId = "";
 
-		if(Boolean.TRUE.equals(validateEasyYesProduct(payload))) {
+		if(Boolean.TRUE.equals(validateLifeProduct(payload))) {
 			uri = PISDProperties.URI_BLACKLIST_EASYYES.getValue();
 			apiBlackListId = PISDProperties.ID_API_BLACKLISTEASYYES_RIMAC.getValue();
 		} else {
@@ -183,8 +185,17 @@ public class PISDR008Impl extends PISDR008Abstract {
 		return JsonHelper.getInstance().toJsonString(object);
 	}
 
-	private Boolean validateEasyYesProduct(final IdentityDataDTO payload){
-		return nonNull(payload.getProducto()) && payload.getProducto().equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
+
+	/**
+	 * Valida si el producto es EASY_YES o VIDADINAMICO
+	 * @param payload
+	 * @return boolean
+	 */
+	private Boolean validateLifeProduct(final IdentityDataDTO payload){
+		List<String> productsLife = new ArrayList();
+		productsLife.add(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
+		productsLife.add("VIDADINAMICO"); //por agregar a constates
+		return nonNull(payload.getProducto()) && productsLife.contains(payload.getProducto());
 	}
 
 }
