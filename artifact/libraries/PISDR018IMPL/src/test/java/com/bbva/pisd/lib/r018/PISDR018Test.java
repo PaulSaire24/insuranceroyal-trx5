@@ -170,4 +170,47 @@ public class PISDR018Test {
 		assertFalse(validation.getData().isEmpty());
 	}
 
+	@Test
+	public void executeBlackListValidationVidaDinamicoProduct() throws IOException {
+		this.request.getProduct().setId("VIDADINAMICO");
+
+		when(this.pisdR008.executeGetBlackListIndicatorService(anyString())).thenReturn(new BlackListIndicatorBO());
+
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_NO);
+
+		when(this.mapperHelper.createResponseToIneligibleCustomer(anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		IdentityDataDTO identityData = new IdentityDataDTO();
+		identityData.setNroDocumento("documentNumber");
+		identityData.setTipoDocumento("DNI");
+		identityData.setTipoLista("tipoLista");
+
+		when(this.mapperHelper.createBlackListRimacRequest(anyObject(), anyString())).thenReturn(identityData);
+
+		CustomerListASO customerList = this.mockDTO.getCustomerDataResponse();
+
+		when(this.pisdR008.executeGetCustomerInformation(anyString())).thenReturn(customerList);
+
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject(), anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
+
+		when(this.pisdR008.executeGetCustomerInformation(anyString())).thenReturn(null);
+
+		validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
+	}
+
 }

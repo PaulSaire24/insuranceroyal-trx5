@@ -18,6 +18,8 @@ import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 import static java.util.Collections.singletonList;
 
 import static java.util.Objects.nonNull;
@@ -91,8 +93,14 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 				customerInformation = this.pisdR008.executeGetCustomerInformation(requestBody.getCustomerId());
 
+				// default birthdate
+				identityData.setFechaNacimiento("1995-04-02");
+
+				if(Objects.nonNull(customerInformation)){
+					identityData.setFechaNacimiento(customerInformation.getData().get(0).getBirthData().getBirthDate());
+				}
+
 				identityData.setProducto(productId);
-				identityData.setFechaNacimiento(customerInformation.getData().get(0).getBirthData().getBirthDate());
 			}
 			SelectionQuotationPayloadBO rimacResponse = this.pisdR008.executeGetBlackListRiskService(identityData, requestBody.getTraceId());
 			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac END *****");
