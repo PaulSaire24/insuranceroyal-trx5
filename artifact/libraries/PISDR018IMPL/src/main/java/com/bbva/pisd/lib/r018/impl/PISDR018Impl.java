@@ -18,6 +18,8 @@ import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 import static java.util.Collections.singletonList;
 
 import static java.util.Objects.nonNull;
@@ -86,18 +88,28 @@ public class PISDR018Impl extends PISDR018Abstract {
 				return indicator;
 			}
 			CustomerListASO customerInformation = null;
-			if (productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC)) {
+			if (isVidadinamicoOrEasyYes(productId)) {
 				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac | Life validation *****");
 
 				customerInformation = this.pisdR008.executeGetCustomerInformation(requestBody.getCustomerId());
 
-				identityData.setProducto(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
-				identityData.setFechaNacimiento(customerInformation.getData().get(0).getBirthData().getBirthDate());
+				// default birthdate
+				identityData.setFechaNacimiento("1995-04-02");
+
+				if(Objects.nonNull(customerInformation)){
+					identityData.setFechaNacimiento(customerInformation.getData().get(0).getBirthData().getBirthDate());
+				}
+
+				identityData.setProducto(productId);
 			}
 			SelectionQuotationPayloadBO rimacResponse = this.pisdR008.executeGetBlackListRiskService(identityData, requestBody.getTraceId());
 			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac END *****");
 			return this.mapperHelper.createResponseBlackListBBVAService(requestBody, rimacResponse, customerInformation);
 		}
+	}
+
+	private static boolean isVidadinamicoOrEasyYes(String productId) {
+		return productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) || productId.equals(PISDConstants.ProductVidaDinamicoLife.VIDA_DINAMICO);
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {
