@@ -109,7 +109,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 	}
 
 	private static boolean isVidadinamicoOrEasyYes(String productId) {
-		return productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) || productId.equals("VIDADINAMICO");
+		return productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) || productId.equals(PISDConstants.ProductVidaDinamicoLife.VIDA_DINAMICO);
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {

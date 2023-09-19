@@ -194,7 +194,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 	private Boolean validateLifeProduct(final IdentityDataDTO payload){
 		List<String> productsLife = new ArrayList();
 		productsLife.add(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
-		productsLife.add("VIDADINAMICO"); //por agregar a constates
+		productsLife.add(PISDConstants.ProductVidaDinamicoLife.VIDA_DINAMICO);
 		return nonNull(payload.getProducto()) && productsLife.contains(payload.getProducto());
 	}
 
