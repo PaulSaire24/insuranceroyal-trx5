@@ -359,6 +359,14 @@ public class MapperHelperTest {
         assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
         assertEquals(finalMessage, validation.getDescription());
 
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(0).setName("NO APLICA");
+
+        validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+
         this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(null);
 
         //Customer information without geopraphic group

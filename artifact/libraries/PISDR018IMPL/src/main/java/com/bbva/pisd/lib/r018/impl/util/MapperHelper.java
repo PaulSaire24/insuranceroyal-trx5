@@ -225,19 +225,22 @@ public class MapperHelper {
         return message.toString();
     }
 
-    private String validateAddress(final CustomerBO customer){
+    private String validateAddress(final CustomerBO customer) {
 
         final String message = this.applicationConfigurationService.getProperty("address-message-key");
 
-        final String defaultValue = "xdepurar";
-
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
 
-        if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
-                defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
-            return message;
-        } else {
-            return WHITESPACE_CHARACTER;
+        if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups())) return message;
+
+        final String geographicGroupTypeValue = customerLocation.getGeographicGroups().get(0).getName();
+
+        switch(geographicGroupTypeValue) {
+            case "XDEPURAR":
+            case "NO APLICA":
+                return message;
+            default:
+                return WHITESPACE_CHARACTER;
         }
 
     }
