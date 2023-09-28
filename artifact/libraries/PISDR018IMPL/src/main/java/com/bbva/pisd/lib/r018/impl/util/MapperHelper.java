@@ -7,10 +7,7 @@ import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
-import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
-import com.bbva.pisd.dto.insurance.bo.LocationBO;
-import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+import com.bbva.pisd.dto.insurance.bo.*;
 
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 
@@ -24,6 +21,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
@@ -231,17 +230,17 @@ public class MapperHelper {
 
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
 
-        if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups())) return message;
+        if (CollectionUtils.isEmpty(customerLocation.getGeographicGroups())) return message;
 
-        final String geographicGroupTypeValue = customerLocation.getGeographicGroups().get(0).getName();
+        String geographicGroupTypeid = "UNCATEGORIZED";
 
-        switch(geographicGroupTypeValue) {
-            case "XDEPURAR":
-            case "NO APLICA":
-                return message;
-            default:
-                return WHITESPACE_CHARACTER;
-        }
+        List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
+                .filter(geographicGroup -> geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
+                .collect(Collectors.toList());
+
+        String resultMessage = geographicGroups.size() > 0 ? message : WHITESPACE_CHARACTER;
+
+        return resultMessage;
 
     }
 
