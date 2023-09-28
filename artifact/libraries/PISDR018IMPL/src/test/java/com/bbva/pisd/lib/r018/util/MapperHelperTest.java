@@ -25,6 +25,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -344,13 +346,17 @@ public class MapperHelperTest {
 
         this.insuranceBlackList.setSaleChannelId("PC");
 
+        List<GeographicGroupsBO> listGeographicGroups = new ArrayList<>();
+        GeographicGroupsBO geographicGroups = new GeographicGroupsBO();
         GeographicGroupTypeBO geographicGroupType = new GeographicGroupTypeBO();
         geographicGroupType.setId("UNCATEGORIZED");
-
-        GeographicGroupsBO geographicGroups = new GeographicGroupsBO();
         geographicGroups.setGeographicGroupType(geographicGroupType);
 
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(new ArrayList<>());
+        listGeographicGroups.add(geographicGroups);
+        listGeographicGroups.add(geographicGroups);
+
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(listGeographicGroups);
+
 
         finalMessage = introductionMessage + "\n" + messageValidation + "\n" + closingMessage;
 
@@ -364,6 +370,9 @@ public class MapperHelperTest {
         assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
         assertEquals(finalMessage, validation.getDescription());
 
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(0).setName("XDEPURAR");
+
+        //UNCATEGORIZED address information
         validation = this.mapperHelper.
                 createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
 
@@ -378,6 +387,7 @@ public class MapperHelperTest {
 
         assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
         assertEquals(finalMessage, validation.getDescription());
+
     }
 
     @Test
