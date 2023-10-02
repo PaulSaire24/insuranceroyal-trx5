@@ -4,12 +4,12 @@
 	<parent>
 		<artifactId>insuranceroyal-trx5</artifactId>
 		<groupId>com.bbva.pisd</groupId>
-		<version>0.13.1</version>
+		<version>0.14.0-SNAPSHOT</version>
 		<relativePath>../../</relativePath>
 	</parent>
 	<groupId>com.bbva.pisd</groupId>
 	<artifactId>TRANSACTIONS-insuranceroyal-trx5</artifactId>
-	<version>0.13.1</version>
+	<version>0.14.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>TRANSACTIONS-insuranceroyal-trx5</name>
 	<modules>
