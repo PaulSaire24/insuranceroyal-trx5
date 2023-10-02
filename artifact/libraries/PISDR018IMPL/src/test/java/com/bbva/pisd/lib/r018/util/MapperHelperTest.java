@@ -6,10 +6,8 @@ import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
-import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
+import com.bbva.pisd.dto.insurance.bo.*;
 
-import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
@@ -25,7 +23,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -345,16 +346,35 @@ public class MapperHelperTest {
 
         this.insuranceBlackList.setSaleChannelId("PC");
 
-        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(0).setName("XDEPURAR");
+        List<GeographicGroupsBO> listGeographicGroups = new ArrayList<>();
+        GeographicGroupsBO geographicGroups = new GeographicGroupsBO();
+        GeographicGroupTypeBO geographicGroupType = new GeographicGroupTypeBO();
+        geographicGroupType.setId("UNCATEGORIZED");
+        geographicGroups.setGeographicGroupType(geographicGroupType);
+
+        listGeographicGroups.add(geographicGroups);
+        listGeographicGroups.add(geographicGroups);
+
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().setGeographicGroups(listGeographicGroups);
+
 
         finalMessage = introductionMessage + "\n" + messageValidation + "\n" + closingMessage;
 
-        //XDEPURAR address information
+        //UNCATEGORIZED address information
         InsuranceBlackListDTO validation = this.mapperHelper.
                 createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
 
         assertNotNull(validation.getIsBlocked());
         assertNotNull(validation.getDescription());
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+
+        this.customerInformation.getData().get(0).getAddresses().get(0).getLocation().getGeographicGroups().get(0).setName("XDEPURAR");
+
+        //UNCATEGORIZED address information
+        validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
 
         assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
         assertEquals(finalMessage, validation.getDescription());
@@ -367,6 +387,7 @@ public class MapperHelperTest {
 
         assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
         assertEquals(finalMessage, validation.getDescription());
+
     }
 
     @Test
