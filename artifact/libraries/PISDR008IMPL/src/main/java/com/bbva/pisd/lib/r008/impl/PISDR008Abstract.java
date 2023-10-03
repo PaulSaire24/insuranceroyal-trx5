@@ -1,5 +1,6 @@
 package com.bbva.pisd.lib.r008.impl;
 
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.library.AbstractLibrary;
 import com.bbva.elara.utility.api.connector.APIConnector;
 import com.bbva.elara.utility.api.connector.APIConnectorBuilder;
@@ -11,6 +12,7 @@ import com.bbva.pisd.lib.r014.PISDR014;
  * This class automatically defines the libraries and utilities that it will use.
  */
 public abstract class PISDR008Abstract extends AbstractLibrary implements PISDR008 {
+	protected ApplicationConfigurationService applicationConfigurationService;
 
 	protected APIConnector externalApiConnector;
 

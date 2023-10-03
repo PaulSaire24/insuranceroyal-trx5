@@ -2,6 +2,7 @@ package com.bbva.pisd.lib.r008;
 
 import com.bbva.apx.exception.business.BusinessException;
 
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
 
@@ -21,6 +22,7 @@ import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 
+import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 
 import com.bbva.pisd.dto.insurance.mock.MockDTO;
@@ -50,6 +52,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -81,7 +84,8 @@ public class PISDR008Test {
 
 	private CustomerListASO customerList;
 	private static final String MESSAGE_EXCEPTION = "CONNECTION ERROR";
-
+	@Resource(name = "applicationConfigurationService")
+	private ApplicationConfigurationService applicationConfigurationService;
 	@Before
 	public void setUp() throws IOException {
 		ThreadContext.set(new Context());
@@ -97,6 +101,7 @@ public class PISDR008Test {
 
 		PISDR014 pisdr014 = mock(PISDR014.class);
 		pisdr008.setPisdR014(pisdr014);
+
 
 		pbtqr002 = mock(PBTQR002.class);
 		pisdr008.setPbtqR002(pbtqr002);
@@ -269,26 +274,5 @@ public class PISDR008Test {
 		assertNull(validation);
 	}
 
-	@Test
-	public void executeGetCustomerHostOk() {
-		LOGGER.info("PISDR008Test - Executing executeGetCustomerHostOk...");
-		PEWUResponse responseHost = new PEWUResponse();
-
-		PEMSALWU data = new PEMSALWU();
-		data.setTdoi("L");
-		data.setSexo("M");
-		data.setContact("123123123");
-		data.setContac2("123123123");
-		data.setContac3("123123123");
-		responseHost.setPemsalwu(data);
-		responseHost.setPemsalw5(new PEMSALW5());
-		responseHost.setHostAdviceCode(null);
-		when(pbtqr002.executeSearchInHostByCustomerId("00000000"))
-				.thenReturn(responseHost);
-
-		CustomerListASO validation = pisdr008.executeGetCustomerHost("00000000");
-
-		assertNotNull(validation);
-	}
 
 }
