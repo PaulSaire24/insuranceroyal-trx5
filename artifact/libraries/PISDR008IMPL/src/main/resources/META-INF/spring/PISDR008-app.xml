@@ -3,5 +3,6 @@
 		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 	<bean id="pisdR008" class="com.bbva.pisd.lib.r008.impl.PISDR008Impl" parent="pisdR008Abstract">
 		<property name="pisdR014" ref="pisdR014"/>
+		<property name="pbtqR002" ref="pbtqR002"/>
 	</bean>
 </beans>

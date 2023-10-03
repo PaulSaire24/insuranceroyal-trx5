@@ -7,6 +7,10 @@ import com.bbva.elara.domain.transaction.ThreadContext;
 
 import com.bbva.elara.utility.api.connector.APIConnector;
 
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW5;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
+import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
@@ -67,6 +71,8 @@ public class PISDR008Test {
 
 	private final PISDR008Impl pisdr008 = new PISDR008Impl();
 
+	private PBTQR002 pbtqr002;
+
 	private MockDTO mockDTO;
 
 	private APIConnector internalApiConnector;
@@ -91,6 +97,9 @@ public class PISDR008Test {
 
 		PISDR014 pisdr014 = mock(PISDR014.class);
 		pisdr008.setPisdR014(pisdr014);
+
+		pbtqr002 = mock(PBTQR002.class);
+		pisdr008.setPbtqR002(pbtqr002);
 
 		mockDTO = MockDTO.getInstance();
 
@@ -258,6 +267,28 @@ public class PISDR008Test {
 		CustomerListASO validation = pisdr008.executeGetCustomerInformation("customerId");
 
 		assertNull(validation);
+	}
+
+	@Test
+	public void executeGetCustomerHostOk() {
+		LOGGER.info("PISDR008Test - Executing executeGetCustomerHostOk...");
+		PEWUResponse responseHost = new PEWUResponse();
+
+		PEMSALWU data = new PEMSALWU();
+		data.setTdoi("L");
+		data.setSexo("M");
+		data.setContact("123123123");
+		data.setContac2("123123123");
+		data.setContac3("123123123");
+		responseHost.setPemsalwu(data);
+		responseHost.setPemsalw5(new PEMSALW5());
+		responseHost.setHostAdviceCode(null);
+		when(pbtqr002.executeSearchInHostByCustomerId("00000000"))
+				.thenReturn(responseHost);
+
+		CustomerListASO validation = pisdr008.executeGetCustomerHost("00000000");
+
+		assertNotNull(validation);
 	}
 
 }
