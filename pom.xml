@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>elara-project</artifactId>
 		<groupId>com.bbva.elara</groupId>
-		<version>7.9.6</version>
+		<version>7.10.0</version>
 	</parent>
 	<artifactId>insuranceroyal-trx5</artifactId>
 	<groupId>com.bbva.pisd</groupId>

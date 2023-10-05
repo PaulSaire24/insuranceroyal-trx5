@@ -1,9 +1,156 @@
 {
-  "cardId": "4551123412341234",
-  "month": "12",
-  "year": "20",
-  "amount": "4",
-  "currencyCode": "840",
-  "providerCode": "11",
-  "providerMessage": "Tarjeta bloq"
+
+  "customerId": "97170040",
+  "firstName": "RICARDO",
+  "lastName": "CANALES",
+  "surnames": "CAMPOS",
+  "secondLastName": "CAMPOS",
+  "birthData": {
+    "country": {
+      "id": "PER"
+    },
+    "birthDate": "1980-12-09"
+  },
+  "nationalities": [
+    {
+      "id": "PER"
+    }
+  ],
+  "identityDocuments": [
+    {
+      "documentType": {
+        "id": "DNI"
+      },
+      "expirationDate": "2019-12-08",
+      "documentNumber": "70456118"
+    }
+  ],
+  "membershipDate": "2018-11-29",
+  "maritalStatus": {
+    "id": "MARRIED"
+  },
+  "gender": {
+    "id": "MALE"
+  },
+  "bank": {
+    "branch": {
+      "branchId": "0130"
+    }
+  },
+  "residence": {
+    "country": {
+      "id": "PER"
+    },
+    "residenceType": {
+      "id": "PERMANENT"
+    },
+    "startDate": "2014-11-01"
+  },
+  "contactDetails": [
+    {
+      "contactType": {
+        "name": "SIN TELEFONO FIJO"
+      }
+    },
+    {
+      "contactDetailId": "C001973815742",
+      "contact": "973815742",
+      "contactType": {
+        "id": "MOBILE_NUMBER",
+        "name": "TELEFONO MOVIL"
+      },
+      "country": {
+        "id": "PER"
+      },
+      "regionalCode": "001",
+      "extension": "00000",
+      "isPreferential": false,
+      "isChecked": false
+    },
+    {
+      "contactDetailId": "EMAIL",
+      "contact": "ROXANA.PANAQUE@BBVA.COM",
+      "contactType": {
+        "id": "EMAIL",
+        "name": "PERSONAL"
+      },
+      "isChecked": true
+    }
+  ],
+  "addresses": [
+    {
+      "addressId": "000",
+      "addressType": {
+        "id": "HOME",
+        "name": "HOGAR"
+      },
+      "ownershipType": {
+        "id": "FAMILY",
+        "name": "FAMILIA"
+      },
+      "location": {
+        "state": {},
+        "country": {
+          "name": "PERU"
+        },
+        "additionalInformation": "GRIFO LEE",
+        "geographicGroups": [
+          {
+            "geographicGroupType": {
+              "id": "JIRON",
+              "name": "JIRON"
+            },
+            "name": "UNION"
+          },
+          {
+            "geographicGroupType": {
+              "id": "URBANIZATION",
+              "name": "URBANIZACION"
+            },
+            "name": "UNION"
+          },
+          {
+            "geographicGroupType": {
+              "id": "DEPARTMENT",
+              "name": "DEPARTMENT"
+            },
+            "code": "01",
+            "name": "LIMA"
+          },
+          {
+            "geographicGroupType": {
+              "id": "PROVINCE",
+              "name": "PROVINCE"
+            },
+            "code": "01",
+            "name": "LIMA"
+          },
+          {
+            "geographicGroupType": {
+              "id": "DISTRICT",
+              "name": "DISTRICT"
+            },
+            "code": "003",
+            "name": "ATE"
+          },
+          {
+            "geographicGroupType": {
+              "id": "EXTERIOR_NUMBER",
+              "name": "EXTERIOR_NUMBER"
+            },
+            "name": "233"
+          },
+          {
+            "geographicGroupType": {
+              "id": "UBIGEO",
+              "name": "UBIGEO"
+            },
+            "code": "0101003"
+          }
+        ]
+      },
+      "residenceStartDate": "2014-11-01"
+    }
+  ]
+
 }

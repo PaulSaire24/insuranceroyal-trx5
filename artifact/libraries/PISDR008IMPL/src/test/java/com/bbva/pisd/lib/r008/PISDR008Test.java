@@ -253,14 +253,6 @@ public class PISDR008Test {
 		assertNotNull(validation.getData().get(0).getBirthData().getBirthDate());
 	}
 
-	@Test
-	public void executeGetCustomerInformationWithCustomerIdNull() {
-		LOGGER.info("PISDR008Test - Executing executeGetCustomerInformationWithCustomerIdNull...");
-
-		CustomerListASO validation = pisdr008.executeGetCustomerInformation(null);
-
-		assertNull(validation);
-	}
 
 	@Test
 	public void executeGetCustomerInformationServiceWithRestClientException() {

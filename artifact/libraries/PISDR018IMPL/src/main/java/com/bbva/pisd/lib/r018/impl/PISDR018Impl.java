@@ -1,7 +1,8 @@
 package com.bbva.pisd.lib.r018.impl;
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
-
+import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
+import org.apache.commons.lang3.StringUtils;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
@@ -87,17 +88,17 @@ public class PISDR018Impl extends PISDR018Abstract {
 				LOGGER.info("***** PISDR018Impl - executeBlackListValidation ***** Inelegible customer!!!");
 				return indicator;
 			}
-			CustomerListASO customerInformation = null;
+			CustomerBO customerInformation = null;
 			if (isVidadinamicoOrEasyYes(productId)) {
 				LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac | Life validation *****");
 
-				customerInformation = this.pisdR008.executeGetCustomerInformation(requestBody.getCustomerId());
-
-				// default birthdate
-				identityData.setFechaNacimiento("1995-04-02");
-
+				customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
+				if(!isNull(requestBody.getCustomerId()) || !StringUtils.isBlank(requestBody.getCustomerId())) {
+					// default birthdate
+					identityData.setFechaNacimiento("1995-04-02");
+				}
 				if(Objects.nonNull(customerInformation)){
-					identityData.setFechaNacimiento(customerInformation.getData().get(0).getBirthData().getBirthDate());
+					identityData.setFechaNacimiento(customerInformation.getBirthData().getBirthDate());
 				}
 
 				identityData.setProducto(productId);
