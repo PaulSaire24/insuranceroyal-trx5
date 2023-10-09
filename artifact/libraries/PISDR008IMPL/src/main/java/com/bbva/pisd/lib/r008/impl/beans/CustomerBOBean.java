@@ -4,6 +4,7 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurance.bo.*;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
+import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.impl.util.Constans;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,9 +23,7 @@ public class CustomerBOBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerBOBean.class);
 
     public CustomerBO mapperCustomer(PEWUResponse result){
-        LOGGER.info("***** RBVDR301Impl - mapperCustomer Start *****");
-        LOGGER.info("***** RBVDR301Impl - mapperCustomer result: {} *****",result);
-        LOGGER.info("***** RBVDR301Impl - mapperCustomer TipoDNI: {} *****",result.getPemsalwu().getTdoi());
+        LOGGER.info("***** PISDR008Impl - mapperCustomer Start *****");
         /* section customer data */
         CustomerBO customer = new CustomerBO();
         customer.setCustomerId(result.getPemsalwu().getNroclie());
@@ -46,10 +45,10 @@ public class CustomerBOBean {
         /* map document type host ? yes*/
         switch (result.getPemsalwu().getTdoi()) {
             case "L":
-                identityDocumentsBO.getDocumentType().setId("DNI");
+                identityDocumentsBO.getDocumentType().setId(Constans.CustomerContact.DNI);
                 break;
             case "R":
-                identityDocumentsBO.getDocumentType().setId("RUC");
+                identityDocumentsBO.getDocumentType().setId(Constans.CustomerContact.RUC);
                 break;
             default:
                 identityDocumentsBO.getDocumentType().setId(result.getPemsalwu().getTdoi());
