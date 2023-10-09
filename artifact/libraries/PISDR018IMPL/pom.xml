@@ -109,8 +109,10 @@
 							!*;version="${osgi.version.manifest}"
 						</Export-Package>
 						<Import-Package>
+							com.bbva.pisd.dto.insurance.aso;version="${osgi.version.manifest}",
 							com.bbva.pisd.lib.r008.*;version="${osgi.version.manifest}",
 							com.bbva.pisd.lib.r018.*;version="${osgi.version.manifest}",
+							javax.xml.transform;version="${osgi.version.manifest}",
 							com.bbva.elara.*;version="${osgi.version.manifest}",
 							org.osgi.framework;version="${osgi.version.manifest}",
 							com.bbva.elara.aspect;version="${osgi.version.manifest}",

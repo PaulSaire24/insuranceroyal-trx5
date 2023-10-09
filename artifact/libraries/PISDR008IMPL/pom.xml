@@ -119,6 +119,7 @@
 							!*;version="${osgi.version.manifest}"
 						</Export-Package>
 						<Import-Package>
+							com.bbva.pbtq.dto.validatedocument.response.host.pewu;version="${osgi.version.manifest}",
 							com.bbva.pisd.lib.r014.*;version="${osgi.version.manifest}",
 							javax.xml.transform;version="${osgi.version.manifest}",
 							org.springframework.http;version="${osgi.version.manifest}",
