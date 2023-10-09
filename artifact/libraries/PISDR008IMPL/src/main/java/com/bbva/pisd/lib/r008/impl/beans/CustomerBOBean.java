@@ -101,6 +101,30 @@ public class CustomerBOBean {
         customer.setContactDetails(contactDetailsBOList);
         /* section contact Details */
 
+        /* section addresses */
+        List<AddressesBO> addresses = new ArrayList<>();
+        AddressesBO address = new AddressesBO();
+        address.setAddressType(new AddressTypeBO());
+        address.getAddressType().setId(result.getPemsalwu().getTipodir()); // map address type
+        address.setResidenceStartDate(result.getPemsalwu().getFedocac());
+        address.setAddressId(result.getPemsalwu().getCoddire());
+
+        LocationBO location = new LocationBO();
+        location.setCountry(new CountryBO());
+        location.getCountry().setId(result.getPemsalwu().getPaisdom());
+        location.setAdditionalInformation(result.getPemsalwu().getDetalle());
+
+        List<GeographicGroupsBO> geographicGroups = new ArrayList<>();
+
+        /* map geographicGroup ? */
+        location.setGeographicGroups(geographicGroups);
+
+        address.setLocation(location);
+        addresses.add(address);
+        customer.setAddresses(addresses);
+        /* section addresses */
+
+
         LOGGER.info("***** CustomerListAsoBean - executeGetListCustomer End ***** customerBO: {}", customer);
         return customer;
     }
