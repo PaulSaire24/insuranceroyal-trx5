@@ -98,6 +98,11 @@
 			<artifactId>elara-utility-api-connector</artifactId>
 			<version>${apx.api.connector.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.bbva.pbtq</groupId>
+			<artifactId>PBTQR002</artifactId>
+			<version>0.1.4</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -114,6 +119,7 @@
 							!*;version="${osgi.version.manifest}"
 						</Export-Package>
 						<Import-Package>
+							com.bbva.pbtq.dto.validatedocument.response.host.pewu;version="${osgi.version.manifest}",
 							com.bbva.pisd.lib.r014.*;version="${osgi.version.manifest}",
 							javax.xml.transform;version="${osgi.version.manifest}",
 							org.springframework.http;version="${osgi.version.manifest}",

@@ -2,11 +2,16 @@ package com.bbva.pisd.lib.r008;
 
 import com.bbva.apx.exception.business.BusinessException;
 
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
 
 import com.bbva.elara.utility.api.connector.APIConnector;
 
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW5;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
+import com.bbva.pbtq.lib.r002.PBTQR002;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
@@ -17,6 +22,7 @@ import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 
+import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 
 import com.bbva.pisd.dto.insurance.mock.MockDTO;
@@ -46,6 +52,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -67,6 +74,8 @@ public class PISDR008Test {
 
 	private final PISDR008Impl pisdr008 = new PISDR008Impl();
 
+	private PBTQR002 pbtqr002;
+
 	private MockDTO mockDTO;
 
 	private APIConnector internalApiConnector;
@@ -75,22 +84,27 @@ public class PISDR008Test {
 
 	private CustomerListASO customerList;
 	private static final String MESSAGE_EXCEPTION = "CONNECTION ERROR";
-
+	@Resource(name = "applicationConfigurationService")
+	private ApplicationConfigurationService applicationConfigurationService;
 	@Before
 	public void setUp() throws IOException {
 		ThreadContext.set(new Context());
 
+		applicationConfigurationService = mock(ApplicationConfigurationService.class);
 		MockBundleContext mockBundleContext = mock(MockBundleContext.class);
-
+		pisdr008.setApplicationConfigurationService(applicationConfigurationService);
 		ApiConnectorFactoryMock apiConnectorFactoryMock = new ApiConnectorFactoryMock();
 		internalApiConnector = apiConnectorFactoryMock.getAPIConnector(mockBundleContext);
 		pisdr008.setInternalApiConnector(internalApiConnector);
-
+		when(applicationConfigurationService.getProperty(anyString())).thenReturn("uri");
 		externalApiConnector = apiConnectorFactoryMock.getAPIConnector(mockBundleContext, false);
 		pisdr008.setExternalApiConnector(externalApiConnector);
 
 		PISDR014 pisdr014 = mock(PISDR014.class);
 		pisdr008.setPisdR014(pisdr014);
+
+		pbtqr002 = mock(PBTQR002.class);
+		pisdr008.setPbtqR002(pbtqr002);
 
 		mockDTO = MockDTO.getInstance();
 
@@ -232,6 +246,7 @@ public class PISDR008Test {
 
 		when(internalApiConnector.getForObject(anyString(), any(), anyMap()))
 				.thenReturn(customerList);
+		when(applicationConfigurationService.getProperty(anyString())).thenReturn("uri");
 
 		CustomerListASO validation = pisdr008.executeGetCustomerInformation("90008603");
 
@@ -257,6 +272,41 @@ public class PISDR008Test {
 
 		CustomerListASO validation = pisdr008.executeGetCustomerInformation("customerId");
 
+		assertNull(validation);
+	}
+	@Test
+	public void executeGetListCustomerHostOk() {
+		LOGGER.info("RBVDR301Test - Executing executeRegisterAdditionalCustomerResponseOK...");
+
+		PEWUResponse responseHost = new PEWUResponse();
+
+		PEMSALWU data = new PEMSALWU();
+		data.setTdoi("L");
+		data.setSexo("M");
+		data.setContact("123123123");
+		data.setContac2("123123123");
+		data.setContac3("123123123");
+		responseHost.setPemsalwu(data);
+		responseHost.setPemsalw5(new PEMSALW5());
+		responseHost.setHostAdviceCode(null);
+		when(pbtqr002.executeSearchInHostByCustomerId("00000000"))
+				.thenReturn(responseHost);
+		when(applicationConfigurationService.getProperty(anyString())).thenReturn("DNI");
+
+		CustomerBO validation = pisdr008.executeGetCustomerHost("00000000");
+		assertNotNull(validation);
+	}
+	@Test
+	public void executeGetListCustomerHostWithAdvise() {
+		LOGGER.info("RBVDR301Test - Executing executeGetListCustomerHostWithAdvise...");
+
+		PEWUResponse responseHost = new PEWUResponse();
+		responseHost.setHostAdviceCode("code");
+		responseHost.setHostMessage("some error");
+		when(pbtqr002.executeSearchInHostByCustomerId("00000000"))
+				.thenReturn(responseHost);
+
+		CustomerBO validation = pisdr008.executeGetCustomerHost("00000000");
 		assertNull(validation);
 	}
 

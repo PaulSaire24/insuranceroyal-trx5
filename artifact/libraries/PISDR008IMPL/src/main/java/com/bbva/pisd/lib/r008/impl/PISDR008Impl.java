@@ -1,5 +1,6 @@
 package com.bbva.pisd.lib.r008.impl;
 
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
@@ -7,17 +8,16 @@ import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 
 import com.bbva.pisd.dto.insurance.blacklist.BlackListRequestRimacDTO;
 
-import com.bbva.pisd.dto.insurance.bo.BlackListHealthRimacBO;
-import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
-import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+import com.bbva.pisd.dto.insurance.bo.*;
 
+import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
 
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.dto.insurance.utils.PISDErrors;
 import com.bbva.pisd.dto.insurance.utils.PISDProperties;
 
+import com.bbva.pisd.lib.r008.impl.beans.CustomerBOBean;
 import com.bbva.pisd.lib.r008.impl.util.JsonHelper;
 import com.bbva.pisd.lib.r008.impl.util.RimacExceptionHandler;
 
@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
@@ -168,6 +169,22 @@ public class PISDR008Impl extends PISDR008Abstract {
 			LOGGER.info("***** PISDR008Impl - executeGetCustomerInformation ***** Customer id wasn't sent");
 			return null;
 		}
+	}
+
+	@Override
+	public CustomerBO executeGetCustomerHost(String customerId) {
+		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer Start *****");
+		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer customerId {} *****",customerId);
+		PEWUResponse result = this.pbtqR002.executeSearchInHostByCustomerId(customerId);
+		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer  ***** Response Host: {}", result);
+
+		if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
+			CustomerBOBean customerListAsoBean = new CustomerBOBean(this.applicationConfigurationService);
+			return customerListAsoBean.mapperCustomer(result);
+		}
+		this.addAdviceWithDescription(result.getHostAdviceCode(), result.getHostMessage());
+		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
+		return null;
 	}
 
 	private HttpHeaders createHttpHeadersAWS(final SignatureAWS signature) {

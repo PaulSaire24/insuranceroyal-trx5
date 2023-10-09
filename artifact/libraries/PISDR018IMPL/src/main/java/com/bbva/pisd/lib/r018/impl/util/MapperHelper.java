@@ -7,11 +7,11 @@ import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
-import com.bbva.pisd.dto.insurance.bo.GeographicGroupsBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
-import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
 import com.bbva.pisd.dto.insurance.bo.LocationBO;
+import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
+import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
@@ -24,7 +24,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
@@ -61,7 +60,7 @@ public class MapperHelper {
 
     public InsuranceBlackListDTO createResponseBlackListBBVAService(final InsuranceBlackListDTO requestBody,
                                                                     final SelectionQuotationPayloadBO rimacResponse,
-                                                                    CustomerListASO customerInformation) {
+                                                                    CustomerBO customerInformation) {
         if(!PISDConstants.BLACKLIST_BLOCKED.equals(rimacResponse.getStatus())) {
             return this.validateChannels(requestBody, customerInformation);
         }
@@ -97,7 +96,7 @@ public class MapperHelper {
         return responseBlackList;
     }
 
-    private InsuranceBlackListDTO validateChannels(final InsuranceBlackListDTO requestBody, CustomerListASO customerInformation) {
+    private InsuranceBlackListDTO validateChannels(final InsuranceBlackListDTO requestBody, CustomerBO customerInformation) {
         String channels = this.applicationConfigurationService.getProperty("channels-to-check-custInfo");
         List<String> channelsList = asList(channels.split(HYPHEN_CHARACTER));
 
@@ -117,9 +116,9 @@ public class MapperHelper {
         return responseBlackList;
     }
 
-    private String getMessageValidation(CustomerListASO customerInformation, final InsuranceBlackListDTO requestBody) {
+    private String getMessageValidation(CustomerBO customerInformation, final InsuranceBlackListDTO requestBody) {
         if(isNull(customerInformation)) {
-            customerInformation = this.pisdR008.executeGetCustomerInformation(requestBody.getCustomerId());
+            customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
         }
         return this.validateMissingCustomerData(customerInformation);
     }
@@ -142,9 +141,9 @@ public class MapperHelper {
         return responseBlackList;
     }
 
-    private String validateMissingCustomerData(final CustomerListASO customerInformation){
+    private String validateMissingCustomerData(final CustomerBO customerInformation){
         if(nonNull(customerInformation)) {
-            CustomerBO customer = customerInformation.getData().get(0);
+            CustomerBO customer = customerInformation;
 
             List<String> validationMessages = new ArrayList<>();
 
@@ -226,24 +225,21 @@ public class MapperHelper {
         return message.toString();
     }
 
-    private String validateAddress(final CustomerBO customer) {
+    private String validateAddress(final CustomerBO customer){
 
         final String message = this.applicationConfigurationService.getProperty("address-message-key");
+
         final String defaultValue = "xdepurar";
-        final String geographicGroupTypeid = "UNCATEGORIZED";
 
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
 
-        if (CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
+        if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
                 defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
             return message;
+        } else {
+            return WHITESPACE_CHARACTER;
         }
 
-        List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
-                .filter(geographicGroup -> geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
-                .collect(Collectors.toList());
-
-        return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
     }
 
     public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
