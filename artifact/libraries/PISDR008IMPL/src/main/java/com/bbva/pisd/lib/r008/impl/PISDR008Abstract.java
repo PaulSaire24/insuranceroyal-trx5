@@ -24,7 +24,12 @@ public abstract class PISDR008Abstract extends AbstractLibrary implements PISDR0
 
 	protected PBTQR002 pbtqR002;
 
-
+	/**
+	 * @param applicationConfigurationService the this.applicationConfigurationService to set
+	 */
+	public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
+		this.applicationConfigurationService = applicationConfigurationService;
+	}
 	/**
 	* @param externalApiConnector the this.externalApiConnector to set
 	*/
