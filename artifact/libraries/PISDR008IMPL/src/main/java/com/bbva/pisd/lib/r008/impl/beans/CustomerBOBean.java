@@ -42,7 +42,20 @@ public class CustomerBOBean {
         identityDocumentsBO.setDocumentType(new DocumentTypeBO());
 
         /* map document type host ? yes*/
-        identityDocumentsBO.getDocumentType().setId(this.applicationConfigurationService.getProperty(result.getPemsalwu().getTdoi()));
+        identityDocumentsBO.setDocumentType(new DocumentTypeBO());
+
+        /* map document type host ? yes*/
+        switch (result.getPemsalwu().getTdoi()) {
+            case "L":
+                identityDocumentsBO.getDocumentType().setId("DNI");
+                break;
+            case "R":
+                identityDocumentsBO.getDocumentType().setId("RUC");
+                break;
+            default:
+                identityDocumentsBO.getDocumentType().setId(result.getPemsalwu().getTdoi());
+                break;
+        }
 
         identityDocumentsBO.setExpirationDate(result.getPemsalwu().getFechav());
         customer.setIdentityDocuments(Collections.singletonList(identityDocumentsBO));
