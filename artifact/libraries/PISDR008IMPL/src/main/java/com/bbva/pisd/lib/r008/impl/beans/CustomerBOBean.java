@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CustomerBoBean {
+public class CustomerBOBean {
     private ApplicationConfigurationService applicationConfigurationService;
 
-    public CustomerBoBean(ApplicationConfigurationService applicationConfigurationService) {
+    public CustomerBOBean(ApplicationConfigurationService applicationConfigurationService) {
         this.applicationConfigurationService = applicationConfigurationService;
     }
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomerBoBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomerBOBean.class);
 
     public CustomerBO mapperCustomer(PEWUResponse result){
 

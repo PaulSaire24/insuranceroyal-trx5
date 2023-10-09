@@ -17,11 +17,10 @@ import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.dto.insurance.utils.PISDErrors;
 import com.bbva.pisd.dto.insurance.utils.PISDProperties;
 
-import com.bbva.pisd.lib.r008.impl.beans.CustomerBoBean;
+import com.bbva.pisd.lib.r008.impl.beans.CustomerBOBean;
 import com.bbva.pisd.lib.r008.impl.util.JsonHelper;
 import com.bbva.pisd.lib.r008.impl.util.RimacExceptionHandler;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Collections;
 
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
@@ -181,7 +179,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer  ***** Response Host: {}", result);
 
 		if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
-			CustomerBoBean customerListAsoBean = new CustomerBoBean(this.applicationConfigurationService);
+			CustomerBOBean customerListAsoBean = new CustomerBOBean(this.applicationConfigurationService);
 			return customerListAsoBean.mapperCustomer(result);
 		}
 		this.addAdviceWithDescription(result.getHostAdviceCode(), result.getHostMessage());
