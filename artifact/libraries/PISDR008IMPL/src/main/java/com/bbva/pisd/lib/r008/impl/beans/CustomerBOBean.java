@@ -22,7 +22,9 @@ public class CustomerBOBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerBOBean.class);
 
     public CustomerBO mapperCustomer(PEWUResponse result){
-
+        LOGGER.info("***** RBVDR301Impl - mapperCustomer Start *****");
+        LOGGER.info("***** RBVDR301Impl - mapperCustomer result: {} *****",result);
+        LOGGER.info("***** RBVDR301Impl - mapperCustomer TipoDNI: {} *****",result.getPemsalwu().getTdoi());
         /* section customer data */
         CustomerBO customer = new CustomerBO();
         customer.setCustomerId(result.getPemsalwu().getNroclie());
@@ -40,10 +42,7 @@ public class CustomerBOBean {
         IdentityDocumentsBO identityDocumentsBO = new IdentityDocumentsBO();
         identityDocumentsBO.setDocumentNumber(result.getPemsalwu().getNdoi());
         identityDocumentsBO.setDocumentType(new DocumentTypeBO());
-
         /* map document type host ? yes*/
-        identityDocumentsBO.setDocumentType(new DocumentTypeBO());
-
         /* map document type host ? yes*/
         switch (result.getPemsalwu().getTdoi()) {
             case "L":
