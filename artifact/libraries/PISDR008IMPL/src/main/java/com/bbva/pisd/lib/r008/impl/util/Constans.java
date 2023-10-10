@@ -5,6 +5,8 @@ public class Constans {
     public static final class CustomerContact{
         private CustomerContact() {
         }
+        public static final String DNI = "DNI";
+        public static final String RUC = "RUC";
         public static final String EMAIL = "EMAIL";
         public static final String MOBILE_NUMBER = "MOBILE_NUMBER";
         public static final String PHONE_NUMBER ="PHONE_NUMBER";

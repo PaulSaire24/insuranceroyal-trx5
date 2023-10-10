@@ -4,6 +4,7 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
 import com.bbva.pisd.dto.insurance.bo.*;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
+import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.impl.util.Constans;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public class CustomerBOBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerBOBean.class);
 
     public CustomerBO mapperCustomer(PEWUResponse result){
-
+        LOGGER.info("***** PISDR008Impl - mapperCustomer Start *****");
         /* section customer data */
         CustomerBO customer = new CustomerBO();
         customer.setCustomerId(result.getPemsalwu().getNroclie());
@@ -40,9 +41,19 @@ public class CustomerBOBean {
         IdentityDocumentsBO identityDocumentsBO = new IdentityDocumentsBO();
         identityDocumentsBO.setDocumentNumber(result.getPemsalwu().getNdoi());
         identityDocumentsBO.setDocumentType(new DocumentTypeBO());
-
         /* map document type host ? yes*/
-        identityDocumentsBO.getDocumentType().setId(this.applicationConfigurationService.getProperty(result.getPemsalwu().getTdoi()));
+        /* map document type host ? yes*/
+        switch (result.getPemsalwu().getTdoi()) {
+            case "L":
+                identityDocumentsBO.getDocumentType().setId(Constans.CustomerContact.DNI);
+                break;
+            case "R":
+                identityDocumentsBO.getDocumentType().setId(Constans.CustomerContact.RUC);
+                break;
+            default:
+                identityDocumentsBO.getDocumentType().setId(result.getPemsalwu().getTdoi());
+                break;
+        }
 
         identityDocumentsBO.setExpirationDate(result.getPemsalwu().getFechav());
         customer.setIdentityDocuments(Collections.singletonList(identityDocumentsBO));
@@ -88,6 +99,30 @@ public class CustomerBOBean {
 
         customer.setContactDetails(contactDetailsBOList);
         /* section contact Details */
+
+        /* section addresses */
+        List<AddressesBO> addresses = new ArrayList<>();
+        AddressesBO address = new AddressesBO();
+        address.setAddressType(new AddressTypeBO());
+        address.getAddressType().setId(result.getPemsalwu().getTipodir()); // map address type
+        address.setResidenceStartDate(result.getPemsalwu().getFedocac());
+        address.setAddressId(result.getPemsalwu().getCoddire());
+
+        LocationBO location = new LocationBO();
+        location.setCountry(new CountryBO());
+        location.getCountry().setId(result.getPemsalwu().getPaisdom());
+        location.setAdditionalInformation(result.getPemsalwu().getDetalle());
+
+        List<GeographicGroupsBO> geographicGroups = new ArrayList<>();
+
+        /* map geographicGroup ? */
+        location.setGeographicGroups(geographicGroups);
+
+        address.setLocation(location);
+        addresses.add(address);
+        customer.setAddresses(addresses);
+        /* section addresses */
+
 
         LOGGER.info("***** CustomerListAsoBean - executeGetListCustomer End ***** customerBO: {}", customer);
         return customer;
