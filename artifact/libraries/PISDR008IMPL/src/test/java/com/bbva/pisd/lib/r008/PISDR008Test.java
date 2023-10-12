@@ -8,6 +8,7 @@ import com.bbva.elara.domain.transaction.ThreadContext;
 
 import com.bbva.elara.utility.api.connector.APIConnector;
 
+import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW4;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALW5;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEMSALWU;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
@@ -17,10 +18,7 @@ import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 
-import com.bbva.pisd.dto.insurance.bo.BlackListHealthRimacBO;
-import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
-import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+import com.bbva.pisd.dto.insurance.bo.*;
 
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
@@ -56,6 +54,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -279,14 +278,20 @@ public class PISDR008Test {
 		LOGGER.info("RBVDR301Test - Executing executeRegisterAdditionalCustomerResponseOK...");
 
 		PEWUResponse responseHost = new PEWUResponse();
-
+		PEMSALW4 dataAdress = new PEMSALW4();
 		PEMSALWU data = new PEMSALWU();
 		data.setTdoi("L");
 		data.setSexo("M");
 		data.setContact("123123123");
 		data.setContac2("123123123");
 		data.setContac3("123123123");
+		data.setContac3("123123123");
+		dataAdress.setDesrela("FAMILIA");
+
+		data.setTipodir("dep"); // map address type
+
 		responseHost.setPemsalwu(data);
+		responseHost.setPemsalw4(dataAdress);
 		responseHost.setPemsalw5(new PEMSALW5());
 		responseHost.setHostAdviceCode(null);
 		when(pbtqr002.executeSearchInHostByCustomerId("00000000"))
