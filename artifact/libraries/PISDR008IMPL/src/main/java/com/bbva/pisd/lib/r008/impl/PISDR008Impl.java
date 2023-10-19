@@ -177,8 +177,9 @@ public class PISDR008Impl extends PISDR008Abstract {
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer Start *****");
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer customerId {} *****",customerId);
 		PEWUResponse result = this.pbtqR002.executeSearchInHostByCustomerId(customerId);
-		GetContactDetailsASO contactDetailsASO =  this.rbvdR046.executeGetContactDetailsService(customerId);
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer  ***** Response Host: {}", result);
+		GetContactDetailsASO contactDetailsASO =  this.rbvdR046.executeGetContactDetailsService(customerId);
+		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer  ***** Response RBVDR046: {}", contactDetailsASO);
 
 		if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
 			CustomerBOBean customerListAsoBean = new CustomerBOBean(this.applicationConfigurationService);
