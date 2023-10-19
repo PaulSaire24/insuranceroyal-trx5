@@ -6,6 +6,7 @@ import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 
+import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListRequestRimacDTO;
 
 import com.bbva.pisd.dto.insurance.bo.*;
@@ -176,11 +177,12 @@ public class PISDR008Impl extends PISDR008Abstract {
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer Start *****");
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer customerId {} *****",customerId);
 		PEWUResponse result = this.pbtqR002.executeSearchInHostByCustomerId(customerId);
+		GetContactDetailsASO contactDetailsASO =  this.rbvdR046.executeGetContactDetailsService(customerId);
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer  ***** Response Host: {}", result);
 
 		if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
 			CustomerBOBean customerListAsoBean = new CustomerBOBean(this.applicationConfigurationService);
-			return customerListAsoBean.mapperCustomer(result);
+			return customerListAsoBean.mapperCustomer(result,contactDetailsASO.getData());
 		}
 		this.addAdviceWithDescription(result.getHostAdviceCode(), result.getHostMessage());
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());

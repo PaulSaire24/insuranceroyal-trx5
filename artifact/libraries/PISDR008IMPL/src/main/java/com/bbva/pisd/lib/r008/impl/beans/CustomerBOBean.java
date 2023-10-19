@@ -2,6 +2,7 @@ package com.bbva.pisd.lib.r008.impl.beans;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.pbtq.dto.validatedocument.response.host.pewu.PEWUResponse;
+import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.bo.*;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
@@ -22,7 +23,7 @@ public class CustomerBOBean {
     }
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerBOBean.class);
 
-    public CustomerBO mapperCustomer(PEWUResponse result){
+    public CustomerBO mapperCustomer(PEWUResponse result, List<ContactDetailsBO> contactDetailsBO){
         LOGGER.info("***** PISDR008Impl - mapperCustomer Start *****");
         /* section customer data */
         CustomerBO customer = new CustomerBO();
@@ -70,7 +71,7 @@ public class CustomerBOBean {
             contactDetailPhone.setContactType(new ContactTypeBO());
             contactDetailPhone.getContactType().setId(Constans.CustomerContact.PHONE_NUMBER);
             contactDetailPhone.getContactType().setName(result.getPemsalw5().getDescmco());
-            contactDetailsBOList.add(contactDetailPhone);
+            contactDetailsBO.add(contactDetailPhone);
         }
 
         /* section contact2 type, validate MOBILE_NUMBER */
@@ -82,7 +83,7 @@ public class CustomerBOBean {
             contactDetailMobileNumber.setContactType(new ContactTypeBO());
             contactDetailMobileNumber.getContactType().setId(Constans.CustomerContact.MOBILE_NUMBER);
             contactDetailMobileNumber.getContactType().setName(result.getPemsalw5().getDescmc1());
-            contactDetailsBOList.add(contactDetailMobileNumber);
+            contactDetailsBO.add(contactDetailMobileNumber);
         }
 
         /* section contact2 type, validate EMAIL */
@@ -94,10 +95,10 @@ public class CustomerBOBean {
             contactDetailEmail.setContactType(new ContactTypeBO());
             contactDetailEmail.getContactType().setId(Constans.CustomerContact.EMAIL);
             contactDetailEmail.getContactType().setName(result.getPemsalw5().getDescmc2());
-            contactDetailsBOList.add(contactDetailEmail);
+            contactDetailsBO.add(contactDetailEmail);
         }
 
-        customer.setContactDetails(contactDetailsBOList);
+        customer.setContactDetails(contactDetailsBO);
         /* section contact Details */
 
         /* section addresses */

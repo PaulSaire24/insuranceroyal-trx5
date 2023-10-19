@@ -19,11 +19,15 @@ import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
@@ -31,6 +35,7 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static org.springframework.util.StringUtils.isEmpty;
+import static org.springframework.util.StringUtils.stripFilenameExtension;
 
 public class MapperHelper {
 
@@ -201,28 +206,49 @@ public class MapperHelper {
 
     private String validateContactDetails(final CustomerBO customer){
 
-        Map<String, String> contactDetails = customer.getContactDetails().
+        Map<String, String> contactDetailsEmail = customer.getContactDetails().
                 stream().
-                filter(contactDetail -> nonNull(contactDetail.getContactType().getId())).
+                filter(contactDetail -> "EMAIL".equalsIgnoreCase(contactDetail.getContactType().getId())).
+                filter(this::validateMail).
                 collect(groupingBy(
                         contactDetail -> contactDetail.getContactType().getId(),
                         mapping(ContactDetailsBO::getContact, new SingletonStringCollector())
                 ));
 
+        Map<String, String> contactDetailsPhone = customer.getContactDetails().
+                stream().
+                filter(contactDetail -> "MOBILE_NUMBER".equalsIgnoreCase(contactDetail.getContactType().getId())  && nonNull(contactDetail.getContact())).
+                filter(this::validatePhone).
+                collect(groupingBy(
+                        contactDetail -> contactDetail.getContactType().getId(),
+                        mapping(ContactDetailsBO::getContact, new SingletonStringCollector())
+                ));
         StringBuilder message = new StringBuilder();
 
-        if(isEmpty(contactDetails.get("MOBILE_NUMBER"))) {
+        if(isEmpty(contactDetailsPhone.get("MOBILE_NUMBER"))) {
             final String cellphoneMessage = this.applicationConfigurationService.getProperty("cellphone-message-key");
             message.append(cellphoneMessage);
         }
 
-        if(isEmpty(contactDetails.get("EMAIL"))) {
+        if(isEmpty(contactDetailsEmail.get("EMAIL"))) {
             final String emailMessge = this.applicationConfigurationService.getProperty("email-message-key");
             if(message.length() != 0) message.append(LINE_BREAK);
             message.append(emailMessge);
         }
 
         return message.toString();
+    }
+
+    private boolean validateMail(ContactDetailsBO mail) {
+        Pattern pattern = Pattern.compile(this.applicationConfigurationService.getProperty("regex-email"));
+        Matcher matcher = pattern.matcher(StringUtils.defaultIfEmpty(mail.getContact(),""));
+        return matcher.find();
+    }
+
+    private boolean validatePhone(ContactDetailsBO phone) {
+        Pattern pattern = Pattern.compile(this.applicationConfigurationService.getProperty("regex-phone"));
+        Matcher matcher = pattern.matcher(StringUtils.defaultIfEmpty(phone.getContact(),""));
+        return matcher.find();
     }
 
     private String validateAddress(final CustomerBO customer){

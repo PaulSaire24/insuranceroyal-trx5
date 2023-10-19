@@ -9,6 +9,7 @@ import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 
 import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
+import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
@@ -23,11 +24,14 @@ import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r018.EntityMock;
 import com.bbva.pisd.lib.r018.impl.util.MapperHelper;
 
+import org.checkerframework.checker.units.qual.C;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -74,6 +78,10 @@ public class MapperHelperTest {
 
         when(this.applicationConfigurationService.getProperty("introduction-message")).thenReturn(introductionMessage);
         when(this.applicationConfigurationService.getProperty("closing-message")).thenReturn(closingMessage);
+        when(this.applicationConfigurationService.getProperty("regex-email")).
+                thenReturn("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+        when(this.applicationConfigurationService.getProperty("regex-phone")).
+                thenReturn("^[0-9]{1,13}+$");
     }
 
     @Test
