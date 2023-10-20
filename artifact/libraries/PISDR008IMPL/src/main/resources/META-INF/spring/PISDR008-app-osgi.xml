@@ -3,4 +3,5 @@
 		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 	<osgi:reference id="pisdR014" interface="com.bbva.pisd.lib.r014.PISDR014"/>
 	<osgi:reference id="pbtqR002" interface="com.bbva.pbtq.lib.r002.PBTQR002"/>
+	<osgi:reference id="rbvdR046" interface="com.bbva.rbvd.lib.r046.RBVDR046"/>
 </beans>

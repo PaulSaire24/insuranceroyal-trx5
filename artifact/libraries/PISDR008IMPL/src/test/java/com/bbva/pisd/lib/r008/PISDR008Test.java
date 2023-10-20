@@ -17,9 +17,11 @@ import com.bbva.pisd.dto.insurance.amazon.SignatureAWS;
 import com.bbva.pisd.dto.insurance.aso.BlackListASO;
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 
+import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.bo.BlackListHealthRimacBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
+import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
@@ -37,6 +39,7 @@ import com.bbva.pisd.lib.r014.PISDR014;
 
 import com.bbva.pisd.mock.MockBundleContext;
 
+import com.bbva.rbvd.lib.r046.RBVDR046;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +59,9 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
@@ -75,6 +81,8 @@ public class PISDR008Test {
 	private final PISDR008Impl pisdr008 = new PISDR008Impl();
 
 	private PBTQR002 pbtqr002;
+
+	private RBVDR046 rbvdr046;
 
 	private MockDTO mockDTO;
 
@@ -106,12 +114,17 @@ public class PISDR008Test {
 		pbtqr002 = mock(PBTQR002.class);
 		pisdr008.setPbtqR002(pbtqr002);
 
+		rbvdr046 = mock(RBVDR046.class);
+		pisdr008.setRbvdR046(rbvdr046);
+
 		mockDTO = MockDTO.getInstance();
 
 		customerList = mockDTO.getCustomerDataResponse();
 
 		when(pisdr014.executeSignatureConstruction(anyString(), anyString(), anyString(), anyString(), anyString()))
 				.thenReturn(new SignatureAWS("", "", "", ""));
+
+
 	}
 
 	@Test
@@ -289,9 +302,14 @@ public class PISDR008Test {
 		responseHost.setPemsalwu(data);
 		responseHost.setPemsalw5(new PEMSALW5());
 		responseHost.setHostAdviceCode(null);
+		List<ContactDetailsBO> contactDetailsBO = new ArrayList<>();
+		GetContactDetailsASO contactDetailsASO = new GetContactDetailsASO();
+		contactDetailsASO.setData(contactDetailsBO);
+
 		when(pbtqr002.executeSearchInHostByCustomerId("00000000"))
 				.thenReturn(responseHost);
 		when(applicationConfigurationService.getProperty(anyString())).thenReturn("DNI");
+		when(rbvdr046.executeGetContactDetailsService(anyString())).thenReturn(contactDetailsASO);
 
 		CustomerBO validation = pisdr008.executeGetCustomerHost("00000000");
 		assertNotNull(validation);
@@ -303,8 +321,13 @@ public class PISDR008Test {
 		PEWUResponse responseHost = new PEWUResponse();
 		responseHost.setHostAdviceCode("code");
 		responseHost.setHostMessage("some error");
+		List<ContactDetailsBO> contactDetailsBO = new ArrayList<>();
+		GetContactDetailsASO contactDetailsASO = new GetContactDetailsASO();
+		contactDetailsASO.setData(contactDetailsBO);
+
 		when(pbtqr002.executeSearchInHostByCustomerId("00000000"))
 				.thenReturn(responseHost);
+		when(rbvdr046.executeGetContactDetailsService(anyString())).thenReturn(contactDetailsASO);
 
 		CustomerBO validation = pisdr008.executeGetCustomerHost("00000000");
 		assertNull(validation);
