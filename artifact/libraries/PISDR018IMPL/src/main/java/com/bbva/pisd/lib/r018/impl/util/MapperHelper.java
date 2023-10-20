@@ -20,6 +20,8 @@ import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -43,7 +45,10 @@ public class MapperHelper {
     private static final String HYPHEN_CHARACTER = "-";
     private static final String LINE_BREAK = "\n";
     private static final String RUC_DOCUMENT = "RUC";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapperHelper.class);
     private ApplicationConfigurationService applicationConfigurationService;
+    private String regexEmail = "";
+    private String regexPhone = "";
 
     private PISDR008 pisdR008;
 
@@ -205,7 +210,11 @@ public class MapperHelper {
     }
 
     private String validateContactDetails(final CustomerBO customer){
-
+        LOGGER.info("***** MapperHelper - validateContactDetails START *****");
+        regexEmail = applicationConfigurationService.getProperty("regex-email");
+        LOGGER.info("***** MapperHelper - validateContactDetails regexEmail ***** : {}", regexEmail);
+        regexPhone = this.applicationConfigurationService.getProperty("regex-phone");
+        LOGGER.info("***** MapperHelper - validateContactDetails regexPhone ***** : {}", regexPhone);
         Map<String, String> contactDetailsEmail = customer.getContactDetails().
                 stream().
                 filter(contactDetail -> "EMAIL".equalsIgnoreCase(contactDetail.getContactType().getId())).
@@ -240,15 +249,21 @@ public class MapperHelper {
     }
 
     private boolean validateMail(ContactDetailsBO mail) {
-        Pattern pattern = Pattern.compile(this.applicationConfigurationService.getProperty("regex-email"));
+        LOGGER.info("***** MapperHelper - validateMail START *****: {}",mail);
+        Pattern pattern = Pattern.compile(regexEmail);
         Matcher matcher = pattern.matcher(StringUtils.defaultIfEmpty(mail.getContact(),""));
-        return matcher.find();
+        boolean result = matcher.find();
+        LOGGER.info("***** PISDR008Impl - validateMail END *****: {}",result);
+        return result;
     }
 
     private boolean validatePhone(ContactDetailsBO phone) {
-        Pattern pattern = Pattern.compile(this.applicationConfigurationService.getProperty("regex-phone"));
+        LOGGER.info("***** MapperHelper - validatePhone START ***** : {}",phone);
+        Pattern pattern = Pattern.compile(regexPhone);
         Matcher matcher = pattern.matcher(StringUtils.defaultIfEmpty(phone.getContact(),""));
-        return matcher.find();
+        boolean result = matcher.find();
+        LOGGER.info("***** PISDR008Impl - validatePhone END *****: {}",result);
+        return result;
     }
 
     private String validateAddress(final CustomerBO customer){
