@@ -3,6 +3,7 @@ package com.bbva.pisd.lib.r018.util;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
+import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
@@ -19,6 +20,7 @@ import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r018.impl.util.MapperHelper;
 
+import com.bbva.rbvd.lib.r046.RBVDR046;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +44,7 @@ public class MapperHelperTest {
     private final String closingMessage = "please solve the problem.";
     private ApplicationConfigurationService applicationConfigurationService;
     private PISDR008 pisdR008;
+    private RBVDR046 rbvdr046;
     private MockDTO mockDTO;
     private InsuranceBlackListDTO insuranceBlackList;
     private CustomerListASO customerInformation;
@@ -59,6 +62,9 @@ public class MapperHelperTest {
         pisdR008 = mock(PISDR008.class);
         mapperHelper.setPisdR008(pisdR008);
 
+        rbvdr046 = mock(RBVDR046.class);
+        mapperHelper.setRbvdR046(rbvdr046);
+
         mockDTO = MockDTO.getInstance();
 
         insuranceBlackList = new InsuranceBlackListDTO();
@@ -70,8 +76,17 @@ public class MapperHelperTest {
 
         customerInformation = mockDTO.getCustomerDataResponse();
 
+        List<ContactDetailsBO> contactDetailsBO = new ArrayList<>();
+        GetContactDetailsASO contactDetailsASO = new GetContactDetailsASO();
+        contactDetailsASO.setData(contactDetailsBO);
+
         when(this.applicationConfigurationService.getProperty("introduction-message")).thenReturn(introductionMessage);
         when(this.applicationConfigurationService.getProperty("closing-message")).thenReturn(closingMessage);
+        when(this.applicationConfigurationService.getProperty("regex-email")).
+                thenReturn("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+        when(this.applicationConfigurationService.getProperty("regex-phone")).
+                thenReturn("^[0-9]{1,13}+$");
+        when(rbvdr046.executeGetContactDetailsService(anyString())).thenReturn(contactDetailsASO);
     }
 
     @Test
