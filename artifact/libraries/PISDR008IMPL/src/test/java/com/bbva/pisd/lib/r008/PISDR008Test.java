@@ -40,6 +40,7 @@ import com.bbva.pisd.lib.r014.PISDR014;
 import com.bbva.pisd.mock.MockBundleContext;
 
 import com.bbva.rbvd.lib.r046.RBVDR046;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
