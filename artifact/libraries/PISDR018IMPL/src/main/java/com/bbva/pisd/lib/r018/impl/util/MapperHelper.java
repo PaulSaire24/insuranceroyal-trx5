@@ -47,8 +47,8 @@ public class MapperHelper {
     private static final String RUC_DOCUMENT = "RUC";
     private static final Logger LOGGER = LoggerFactory.getLogger(MapperHelper.class);
     private ApplicationConfigurationService applicationConfigurationService;
-    private String regexEmail = this.applicationConfigurationService.getProperty("regex-email");
-    private String regexPhone = this.applicationConfigurationService.getProperty("regex-phone");
+    private String regexEmail = "";
+    private String regexPhone = "";
 
     private PISDR008 pisdR008;
 
@@ -211,7 +211,9 @@ public class MapperHelper {
 
     private String validateContactDetails(final CustomerBO customer){
         LOGGER.info("***** MapperHelper - validateContactDetails START *****");
+        regexEmail = applicationConfigurationService.getProperty("regex-email");
         LOGGER.info("***** MapperHelper - validateContactDetails regexEmail ***** : {}", regexEmail);
+        regexPhone = this.applicationConfigurationService.getProperty("regex-phone");
         LOGGER.info("***** MapperHelper - validateContactDetails regexPhone ***** : {}", regexPhone);
         Map<String, String> contactDetailsEmail = customer.getContactDetails().
                 stream().
