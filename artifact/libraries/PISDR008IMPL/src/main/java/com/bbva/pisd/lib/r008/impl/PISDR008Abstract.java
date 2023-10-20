@@ -1,10 +1,8 @@
 package com.bbva.pisd.lib.r008.impl;
 
 import com.bbva.elara.library.AbstractLibrary;
-
 import com.bbva.elara.utility.api.connector.APIConnector;
 import com.bbva.elara.utility.api.connector.APIConnectorBuilder;
-
 import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r014.PISDR014;
 
@@ -20,6 +18,7 @@ public abstract class PISDR008Abstract extends AbstractLibrary implements PISDR0
 	protected APIConnector internalApiConnector;
 
 	protected PISDR014 pisdR014;
+
 
 	/**
 	* @param externalApiConnector the this.externalApiConnector to set
