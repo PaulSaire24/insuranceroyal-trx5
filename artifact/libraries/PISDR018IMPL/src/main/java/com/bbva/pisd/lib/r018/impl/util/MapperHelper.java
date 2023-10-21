@@ -223,7 +223,7 @@ public class MapperHelper {
         LOGGER.info("***** MapperHelper - validateContactDetails regexPhone ***** : {}", regexPhone);
         Map<String, String> contactDetailsEmail = customer.getContactDetails()
                 .stream()
-                .filter(contactDetail -> "EMAIL".equalsIgnoreCase(contactDetail.getContactType().getId()))
+                .filter(contactDetail -> "EMAIL".equalsIgnoreCase(contactDetail.getContactType().getId()) && nonNull(contactDetail.getContact()))
                 .filter(this::validateMail)
                 .collect(groupingBy(
                         contactDetail -> contactDetail.getContactType().getId(),
@@ -232,7 +232,7 @@ public class MapperHelper {
 
         Map<String, String> contactDetailsPhone = customer.getContactDetails()
                 .stream()
-                .filter(contactDetail -> "MOBILE_NUMBER".equalsIgnoreCase(contactDetail.getContactType().getId()) )
+                .filter(contactDetail -> "MOBILE_NUMBER".equalsIgnoreCase(contactDetail.getContactType().getId()) && nonNull(contactDetail.getContact()))
                 .filter(this::validatePhone)
                 .collect(groupingBy(
                         contactDetail -> contactDetail.getContactType().getId(),

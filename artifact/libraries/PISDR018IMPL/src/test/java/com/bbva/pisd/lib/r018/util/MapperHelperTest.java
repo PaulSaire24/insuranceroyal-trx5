@@ -544,5 +544,84 @@ public class MapperHelperTest {
         assertEquals("", validation.getDescription());
     }
 
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatPhoneContactDetails() {
+        String cellPhoneValidation = "Revisar Celular";
+
+        when(this.applicationConfigurationService.getProperty("cellphone-message-key")).
+                thenReturn(cellPhoneValidation);
+
+        String finalMessage = "";
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.customerInformation.getData().get(0).getContactDetails().get(1).setContact("ABC");
+
+        finalMessage = introductionMessage + "\n" + cellPhoneValidation + "\n" + closingMessage;
+
+        //Missing mobile number
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertNotNull(validation.getIsBlocked());
+        assertNotNull(validation.getDescription());
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+    }
+
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatEmailContactDetails() {
+
+        String emailValidation = "Revisar Correo";
+
+        when(this.applicationConfigurationService.getProperty("email-message-key")).
+                thenReturn(emailValidation);
+
+        String finalMessage = "";
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.customerInformation.getData().get(0).getContactDetails().get(2).setContact("NESTOR257");
+
+        finalMessage = introductionMessage + "\n" + emailValidation + "\n" + closingMessage;
+
+        //Missing mobile number and email
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+
+    }
+
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatEmailAndPhoneContactDetails() {
+        String cellPhoneValidation = "Revisar Celular";
+
+        when(this.applicationConfigurationService.getProperty("cellphone-message-key")).
+                thenReturn(cellPhoneValidation);
+
+        String emailValidation = "Revisar Correo";
+
+        when(this.applicationConfigurationService.getProperty("email-message-key")).
+                thenReturn(emailValidation);
+
+        String finalMessage = "";
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        finalMessage = introductionMessage + "\n" + cellPhoneValidation + "\n" + emailValidation + "\n" + closingMessage;
+
+        //Empty contactDetails
+        this.customerInformation.getData().get(0).getContactDetails().get(1).getContactType().setId(null);
+        this.customerInformation.getData().get(0).getContactDetails().get(2).getContactType().setId(null);
+
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+    }
 
 }
