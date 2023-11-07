@@ -95,7 +95,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 				customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
 				if(!isNull(requestBody.getCustomerId()) || !StringUtils.isBlank(requestBody.getCustomerId())) {
 					// default birthdate
-					identityData.setFechaNacimiento("1995-04-02");
+					identityData.setFechaNacimiento(null);
 				}
 				if(Objects.nonNull(customerInformation)){
 					identityData.setFechaNacimiento(customerInformation.getBirthData().getBirthDate());
