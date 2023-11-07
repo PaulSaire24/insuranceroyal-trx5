@@ -10,6 +10,7 @@ import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 
 import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
+import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
@@ -29,7 +30,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -437,7 +440,7 @@ public class MapperHelperTest {
 
         this.insuranceBlackList.setSaleChannelId("PC");
 
-        this.customerInformation.getData().get(0).getContactDetails().get(1).setContact("ABC");
+        this.customerInformation.getContactDetails().get(1).setContact("ABC");
 
         finalMessage = introductionMessage + "\n" + cellPhoneValidation + "\n" + closingMessage;
 
@@ -464,7 +467,7 @@ public class MapperHelperTest {
 
         this.insuranceBlackList.setSaleChannelId("PC");
 
-        this.customerInformation.getData().get(0).getContactDetails().get(2).setContact("NESTOR257");
+        this.customerInformation.getContactDetails().get(2).setContact("NESTOR257");
 
         finalMessage = introductionMessage + "\n" + emailValidation + "\n" + closingMessage;
 
@@ -496,8 +499,8 @@ public class MapperHelperTest {
         finalMessage = introductionMessage + "\n" + cellPhoneValidation + "\n" + emailValidation + "\n" + closingMessage;
 
         //Empty contactDetails
-        this.customerInformation.getData().get(0).getContactDetails().get(1).getContactType().setId(null);
-        this.customerInformation.getData().get(0).getContactDetails().get(2).getContactType().setId(null);
+        this.customerInformation.getContactDetails().get(1).getContactType().setId(null);
+        this.customerInformation.getContactDetails().get(2).getContactType().setId(null);
 
         InsuranceBlackListDTO validation = this.mapperHelper.
                 createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);

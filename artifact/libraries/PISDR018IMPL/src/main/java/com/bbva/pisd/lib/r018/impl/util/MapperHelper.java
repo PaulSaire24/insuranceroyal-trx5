@@ -72,7 +72,7 @@ public class MapperHelper {
 
     public InsuranceBlackListDTO createResponseBlackListBBVAService(final InsuranceBlackListDTO requestBody,
                                                                     final SelectionQuotationPayloadBO rimacResponse,
-                                                                    CustomerListASO customerInformation) {
+                                                                    CustomerBO customerInformation) {
         if(!PISDConstants.BLACKLIST_BLOCKED.equals(rimacResponse.getStatus())) {
             return this.validateChannels(requestBody, customerInformation);
         }
@@ -129,11 +129,13 @@ public class MapperHelper {
     }
 
     private String getMessageValidation(CustomerBO customerInformation, final InsuranceBlackListDTO requestBody) {
+        GetContactDetailsASO contactDetailsASO =  this.rbvdR046.executeGetContactDetailsService(requestBody.getCustomerId());
+        LOGGER.info("***** MapperHelper - executeGetContactDetailsService regexEmail ***** : {}", contactDetailsASO);
         if(isNull(customerInformation)) {
             customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
         }
         if(nonNull(customerInformation))
-            customerInformation.getData().get(0).getContactDetails().addAll(contactDetailsASO.getData());
+            customerInformation.getContactDetails().addAll(contactDetailsASO.getData());
         return this.validateMissingCustomerData(customerInformation);
     }
 
