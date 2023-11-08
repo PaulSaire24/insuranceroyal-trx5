@@ -134,8 +134,12 @@ public class MapperHelper {
         if(isNull(customerInformation)) {
             customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
         }
-        if(nonNull(customerInformation))
-            customerInformation.getContactDetails().addAll(contactDetailsASO.getData());
+        if(nonNull(customerInformation)){
+            if(nonNull(contactDetailsASO)) {
+                customerInformation.getContactDetails().addAll(contactDetailsASO.getData());
+            }
+        }
+
         return this.validateMissingCustomerData(customerInformation);
     }
 

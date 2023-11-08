@@ -1,6 +1,5 @@
 package com.bbva.pisd.lib.r018.impl;
 
-import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import org.apache.commons.lang3.StringUtils;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
