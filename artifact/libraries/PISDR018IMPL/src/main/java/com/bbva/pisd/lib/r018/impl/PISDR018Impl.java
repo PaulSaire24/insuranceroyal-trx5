@@ -72,7 +72,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 	}
 
 	private void validateBlackListType(final InsuranceBlackListDTO input) {
-		String products = this.applicationConfigurationService.getProperty(PISDProperties.PRODUCT_LIST_FOR_BLACK.getValue());
+		String products = this.applicationConfigurationService.getProperty(PISDProperties.PRODUCT_BLACK_YELLOW_LIST.getValue());
 		String[] productsAll = products.split(",");
 		List<String> productList = Arrays.stream(productsAll).collect(toList());
 

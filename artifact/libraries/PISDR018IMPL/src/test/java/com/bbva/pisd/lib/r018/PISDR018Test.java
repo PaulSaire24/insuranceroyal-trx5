@@ -86,7 +86,7 @@ public class PISDR018Test {
 		request.setProduct(new InsuranceProductDTO(SALUD, null, null));
 		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
 
-		when(applicationConfigurationService.getProperty(PISDProperties.PRODUCT_LIST_FOR_BLACK.getValue())).thenReturn("VIDAINVERSION");
+		when(applicationConfigurationService.getProperty(PISDProperties.PRODUCT_BLACK_YELLOW_LIST.getValue())).thenReturn("VIDAINVERSION");
 		pisdR018.setApplicationConfigurationService(applicationConfigurationService);
 	}
 
