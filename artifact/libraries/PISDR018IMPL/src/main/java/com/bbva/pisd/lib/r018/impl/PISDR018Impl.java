@@ -2,6 +2,7 @@ package com.bbva.pisd.lib.r018.impl;
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
+import com.bbva.pisd.dto.insurance.utils.PISDProperties;
 import org.apache.commons.lang3.StringUtils;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.EntityOutBlackListDTO;
@@ -19,16 +20,23 @@ import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.Collections.singletonList;
 
 import static java.util.Objects.nonNull;
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 
 public class PISDR018Impl extends PISDR018Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PISDR018Impl.class);
+
+	private static final String LIST_YELLOW = "1";
+
+	private static final String LIST_BLACK = "3";
 
 	@Override
 	public EntityOutBlackListDTO executeBlackListValidation(final InsuranceBlackListDTO input) {
@@ -64,9 +72,24 @@ public class PISDR018Impl extends PISDR018Abstract {
 	}
 
 	private void validateBlackListType(final InsuranceBlackListDTO input) {
+		String products = this.applicationConfigurationService.getProperty(PISDProperties.PRODUCT_LIST_FOR_BLACK.getValue());
+		String[] productsAll = products.split(",");
+		List<String> productList = Arrays.stream(productsAll).collect(toList());
+
 		if (isNull(input.getBlackListType()) || isNull(input.getBlackListType().getId())) {
-			input.setBlackListType(new BlackListTypeDTO("3"));
+			input.setBlackListType(new BlackListTypeDTO(LIST_BLACK));
 		}
+		productList.forEach(
+				(k) -> {
+			if (k.equals(input.getProduct().getId())){
+				StringBuilder sb = new StringBuilder();
+				sb.append(LIST_YELLOW);
+				sb.append(",");
+				sb.append(LIST_BLACK);
+				input.setBlackListType(new BlackListTypeDTO(sb.toString()));
+			}}
+		);
+
 	}
 
 	private InsuranceBlackListDTO validateCustomerAvailability(final InsuranceBlackListDTO requestBody) {
