@@ -27,7 +27,7 @@ public class RimacExceptionHandler {
     }
 
     private SelectionQuotationPayloadBO clientExceptionHandler(HttpClientErrorException exception) {
-        LOGGER.debug("HttpClientErrorException - Response body: {}", exception.getResponseBodyAsString());
+        LOGGER.info("HttpClientErrorException - Response body: {}", exception.getResponseBodyAsString());
         ErrorRimacBO errorObject = this.getErrorObject(exception.getResponseBodyAsString());
         return this.throwingBusinessException(errorObject.getError());
     }
@@ -37,7 +37,8 @@ public class RimacExceptionHandler {
     }
 
     private SelectionQuotationPayloadBO throwingBusinessException(ErrorResponseBO error) {
-        LOGGER.debug("Exception error code -> {}", error.getCode());
+        LOGGER.info("Exception error code -> {}", error.getCode());
+        LOGGER.info("Exception error - Error :{}", error);
         SelectionQuotationPayloadBO output = new SelectionQuotationPayloadBO();
         if(error.getCode().equals(ERROR_CODE_001) && !error.getDetails().isEmpty()) {
             output.setStatus(STATUS_BLOCKED);
