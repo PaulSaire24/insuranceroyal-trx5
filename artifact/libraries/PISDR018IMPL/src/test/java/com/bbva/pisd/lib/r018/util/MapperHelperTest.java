@@ -3,12 +3,14 @@ package com.bbva.pisd.lib.r018.util;
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
+import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
 import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 
 import com.bbva.pisd.dto.insurance.bo.BlackListRiskRimacBO;
+import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
 import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.commons.DocumentTypeDTO;
@@ -23,11 +25,14 @@ import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r018.EntityMock;
 import com.bbva.pisd.lib.r018.impl.util.MapperHelper;
 
+import com.bbva.rbvd.lib.r046.RBVDR046;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,6 +48,7 @@ public class MapperHelperTest {
     private final String closingMessage = "please solve the problem.";
     private ApplicationConfigurationService applicationConfigurationService;
     private PISDR008 pisdR008;
+    private RBVDR046 rbvdr046;
     private MockDTO mockDTO;
     private InsuranceBlackListDTO insuranceBlackList;
     private EntityMock entityMock;
@@ -61,6 +67,9 @@ public class MapperHelperTest {
         pisdR008 = mock(PISDR008.class);
         mapperHelper.setPisdR008(pisdR008);
 
+        rbvdr046 = mock(RBVDR046.class);
+        mapperHelper.setRbvdR046(rbvdr046);
+
         mockDTO = MockDTO.getInstance();
         entityMock=EntityMock.getInstance();
         insuranceBlackList = new InsuranceBlackListDTO();
@@ -72,8 +81,17 @@ public class MapperHelperTest {
         customerInformation1= mockDTO.getCustomerDataResponse();
         customerInformation= entityMock.getCustomerDataResponseBO();
 
+        List<ContactDetailsBO> contactDetailsBO = new ArrayList<>();
+        GetContactDetailsASO contactDetailsASO = new GetContactDetailsASO();
+        contactDetailsASO.setData(contactDetailsBO);
+
         when(this.applicationConfigurationService.getProperty("introduction-message")).thenReturn(introductionMessage);
         when(this.applicationConfigurationService.getProperty("closing-message")).thenReturn(closingMessage);
+        when(this.applicationConfigurationService.getProperty("regex-email")).
+                thenReturn("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
+        when(this.applicationConfigurationService.getProperty("regex-phone")).
+                thenReturn("^[0-9]{1,13}+$");
+        when(rbvdr046.executeGetContactDetailsService(anyString())).thenReturn(contactDetailsASO);
     }
 
     @Test
@@ -411,5 +429,84 @@ public class MapperHelperTest {
         assertEquals("", validation.getDescription());
     }
 
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatPhoneContactDetails() {
+        String cellPhoneValidation = "Revisar Celular";
+
+        when(this.applicationConfigurationService.getProperty("cellphone-message-key")).
+                thenReturn(cellPhoneValidation);
+
+        String finalMessage = "";
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.customerInformation.getContactDetails().get(1).setContact("ABC");
+
+        finalMessage = introductionMessage + "\n" + cellPhoneValidation + "\n" + closingMessage;
+
+        //Missing mobile number
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertNotNull(validation.getIsBlocked());
+        assertNotNull(validation.getDescription());
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+    }
+
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatEmailContactDetails() {
+
+        String emailValidation = "Revisar Correo";
+
+        when(this.applicationConfigurationService.getProperty("email-message-key")).
+                thenReturn(emailValidation);
+
+        String finalMessage = "";
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        this.customerInformation.getContactDetails().get(2).setContact("NESTOR257");
+
+        finalMessage = introductionMessage + "\n" + emailValidation + "\n" + closingMessage;
+
+        //Missing mobile number and email
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+
+    }
+
+    @Test
+    public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatEmailAndPhoneContactDetails() {
+        String cellPhoneValidation = "Revisar Celular";
+
+        when(this.applicationConfigurationService.getProperty("cellphone-message-key")).
+                thenReturn(cellPhoneValidation);
+
+        String emailValidation = "Revisar Correo";
+
+        when(this.applicationConfigurationService.getProperty("email-message-key")).
+                thenReturn(emailValidation);
+
+        String finalMessage = "";
+
+        this.insuranceBlackList.setSaleChannelId("PC");
+
+        finalMessage = introductionMessage + "\n" + cellPhoneValidation + "\n" + emailValidation + "\n" + closingMessage;
+
+        //Empty contactDetails
+        this.customerInformation.getContactDetails().get(1).getContactType().setId(null);
+        this.customerInformation.getContactDetails().get(2).getContactType().setId(null);
+
+        InsuranceBlackListDTO validation = this.mapperHelper.
+                createResponseBlackListBBVAService(this.insuranceBlackList, this.rimacNegativeResponse, this.customerInformation);
+
+        assertEquals(PISDConstants.LETTER_SI, validation.getIsBlocked());
+        assertEquals(finalMessage, validation.getDescription());
+    }
 
 }

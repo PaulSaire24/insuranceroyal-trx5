@@ -90,6 +90,8 @@ public class PISDR008Impl extends PISDR008Abstract {
 		String apiBlackListId = "";
 
 		if(Boolean.TRUE.equals(validateLifeProduct(payload))) {
+			LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Uri: {} ","URI_BLACKLIST_EASYYES");
+
 			uri = PISDProperties.URI_BLACKLIST_EASYYES.getValue();
 			apiBlackListId = PISDProperties.ID_API_BLACKLISTEASYYES_RIMAC.getValue();
 		} else {

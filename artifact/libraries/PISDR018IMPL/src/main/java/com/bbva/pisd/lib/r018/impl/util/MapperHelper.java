@@ -4,6 +4,7 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 
 import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 
+import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
@@ -19,12 +20,19 @@ import com.bbva.pisd.dto.insurance.commons.IdentityDocumentDTO;
 
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
 import com.bbva.pisd.lib.r008.PISDR008;
+import com.bbva.rbvd.lib.r046.RBVDR046;
+
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -39,8 +47,12 @@ public class MapperHelper {
     private static final String LINE_BREAK = "\n";
     private static final String RUC_DOCUMENT = "RUC";
     private ApplicationConfigurationService applicationConfigurationService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapperHelper.class);
 
     private PISDR008 pisdR008;
+    private RBVDR046 rbvdR046;
+    private String regexEmail = "";
+    private String regexPhone = "";
 
     public IdentityDataDTO createBlackListRimacRequest(final IdentityDocumentDTO identityDocument, final String blackListType) {
         IdentityDataDTO identityData = new IdentityDataDTO();
@@ -97,7 +109,7 @@ public class MapperHelper {
     }
 
     private InsuranceBlackListDTO validateChannels(final InsuranceBlackListDTO requestBody, CustomerBO customerInformation) {
-        String channels = this.applicationConfigurationService.getProperty("channels-to-check-custInfo");
+        String channels = this.applicationConfigurationService.getProperty(ConstantUtils.CHANNELS_TO_CHECK);
         List<String> channelsList = asList(channels.split(HYPHEN_CHARACTER));
 
         String documentType = requestBody.getIdentityDocument().getDocumentType().getId();
@@ -117,9 +129,17 @@ public class MapperHelper {
     }
 
     private String getMessageValidation(CustomerBO customerInformation, final InsuranceBlackListDTO requestBody) {
+        GetContactDetailsASO contactDetailsASO =  this.rbvdR046.executeGetContactDetailsService(requestBody.getCustomerId());
+        LOGGER.info("***** MapperHelper - executeGetContactDetailsService regexEmail ***** : {}", contactDetailsASO);
         if(isNull(customerInformation)) {
             customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
         }
+        if(nonNull(customerInformation)){
+            if(nonNull(contactDetailsASO)) {
+                customerInformation.getContactDetails().addAll(contactDetailsASO.getData());
+            }
+        }
+
         return this.validateMissingCustomerData(customerInformation);
     }
 
@@ -167,8 +187,8 @@ public class MapperHelper {
             /* Se concatenan los mensajes de validación con salto de línea */
             if(!validationMessages.isEmpty()){
                 final String missingInformation = String.join(LINE_BREAK,validationMessages);
-                final String introductionMessage = this.applicationConfigurationService.getProperty("introduction-message");
-                final String closingMessage = this.applicationConfigurationService.getProperty("closing-message");
+                final String introductionMessage = this.applicationConfigurationService.getProperty(ConstantUtils.INTRODUCTION_MESSAGE);
+                final String closingMessage = this.applicationConfigurationService.getProperty(ConstantUtils.CLOSING_MESSAGE);
                 return introductionMessage + LINE_BREAK + missingInformation + LINE_BREAK + closingMessage;
             }
             return WHITESPACE_CHARACTER;
@@ -188,11 +208,11 @@ public class MapperHelper {
     private String validateCustomerBasicInformation(final CustomerBO customer){
         StringBuilder message = new StringBuilder();
         if(isEmpty(customer.getFirstName()) || isEmpty(customer.getLastName())) {
-            final String nameMessage = this.applicationConfigurationService.getProperty("customer-name-message-key");
+            final String nameMessage = this.applicationConfigurationService.getProperty(ConstantUtils.CUSTOMER_NAME_MESSAGE_KEY);
             message.append(nameMessage);
         }
         if(isEmpty(customer.getGender().getId())) {
-            final String genderMessage = this.applicationConfigurationService.getProperty("gender-message-key");
+            final String genderMessage = this.applicationConfigurationService.getProperty(ConstantUtils.GENDER_MESSAGE_KEY);
             if(message.length() != 0) message.append(LINE_BREAK);
             message.append(genderMessage);
         }
@@ -200,24 +220,38 @@ public class MapperHelper {
     }
 
     private String validateContactDetails(final CustomerBO customer){
+        LOGGER.info("***** MapperHelper - validateContactDetails START *****");
+        regexEmail = applicationConfigurationService.getProperty(ConstantUtils.REGEX_EMAIL);
+        LOGGER.info("***** MapperHelper - validateContactDetails regexEmail ***** : {}", regexEmail);
+        regexPhone = this.applicationConfigurationService.getProperty(ConstantUtils.REGEX_PHONE);
+        LOGGER.info("***** MapperHelper - validateContactDetails regexPhone ***** : {}", regexPhone);
+        Map<String, String> contactDetailsEmail = customer.getContactDetails()
+                .stream()
+                .filter(contactDetail -> ConstantUtils.EMAIL.equalsIgnoreCase(contactDetail.getContactType().getId()) && nonNull(contactDetail.getContact()))
+                .filter(this::validateMail)
+                .collect(groupingBy(
+                        contactDetail -> contactDetail.getContactType().getId(),
+                        mapping(ContactDetailsBO::getContact, new SingletonStringCollector())
+                ));
 
-        Map<String, String> contactDetails = customer.getContactDetails().
-                stream().
-                filter(contactDetail -> nonNull(contactDetail.getContactType().getId())).
-                collect(groupingBy(
+        Map<String, String> contactDetailsPhone = customer.getContactDetails()
+                .stream()
+                .filter(contactDetail -> ConstantUtils.MOBILE_NUMBER.equalsIgnoreCase(contactDetail.getContactType().getId()) && nonNull(contactDetail.getContact()))
+                .filter(this::validatePhone)
+                .collect(groupingBy(
                         contactDetail -> contactDetail.getContactType().getId(),
                         mapping(ContactDetailsBO::getContact, new SingletonStringCollector())
                 ));
 
         StringBuilder message = new StringBuilder();
 
-        if(isEmpty(contactDetails.get("MOBILE_NUMBER"))) {
-            final String cellphoneMessage = this.applicationConfigurationService.getProperty("cellphone-message-key");
+        if(isEmpty(contactDetailsPhone.get(ConstantUtils.MOBILE_NUMBER))) {
+            final String cellphoneMessage = this.applicationConfigurationService.getProperty(ConstantUtils.CELLPHONE_MESSAGE_KEY);
             message.append(cellphoneMessage);
         }
 
-        if(isEmpty(contactDetails.get("EMAIL"))) {
-            final String emailMessge = this.applicationConfigurationService.getProperty("email-message-key");
+        if(isEmpty(contactDetailsEmail.get(ConstantUtils.EMAIL))) {
+            final String emailMessge = this.applicationConfigurationService.getProperty(ConstantUtils.EMAIL_MESSAGE_KEY);
             if(message.length() != 0) message.append(LINE_BREAK);
             message.append(emailMessge);
         }
@@ -225,11 +259,29 @@ public class MapperHelper {
         return message.toString();
     }
 
-    private String validateAddress(final CustomerBO customer){
+    private boolean validateMail(ContactDetailsBO mail) {
+        LOGGER.info("***** MapperHelper - validateMail START *****: {}",mail.getContact());
+        Pattern pattern = Pattern.compile(regexEmail);
+        Matcher matcher = pattern.matcher(StringUtils.defaultIfEmpty(mail.getContact(),""));
+        boolean result = matcher.find();
+        LOGGER.info("***** MapperHelper - validateMail END *****: {}",result);
+        return result;
+    }
 
-        final String message = this.applicationConfigurationService.getProperty("address-message-key");
+    private boolean validatePhone(ContactDetailsBO phone) {
+        LOGGER.info("***** MapperHelper - validatePhone START ***** : {}",phone.getContact());
+        Pattern pattern = Pattern.compile(regexPhone);
+        Matcher matcher = pattern.matcher(StringUtils.defaultIfEmpty(phone.getContact(),""));
+        boolean result = matcher.find();
+        LOGGER.info("***** MapperHelper - validatePhone END *****: {}",result);
+        return result;
+    }
 
-        final String defaultValue = "xdepurar";
+    private String validateAddress(final CustomerBO customer) {
+
+        final String message = this.applicationConfigurationService.getProperty(ConstantUtils.ADDRESS_MESSAGE_KEY);
+
+        final String defaultValue = ConstantUtils.XDEPURAR;
 
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
 
@@ -248,6 +300,10 @@ public class MapperHelper {
 
     public void setPisdR008(PISDR008 pisdR008) {
         this.pisdR008 = pisdR008;
+    }
+
+    public void setRbvdR046(RBVDR046 rbvdR046) {
+        this.rbvdR046 = rbvdR046;
     }
 
 }
