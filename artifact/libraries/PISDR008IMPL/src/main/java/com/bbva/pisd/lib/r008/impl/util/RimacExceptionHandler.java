@@ -39,6 +39,7 @@ public class RimacExceptionHandler {
     private SelectionQuotationPayloadBO throwingBusinessException(ErrorResponseBO error) {
         LOGGER.info("Exception error code -> {}", error.getCode());
         LOGGER.info("Exception error - Error :{}", error);
+        LOGGER.info("Exception error - ErrorDetail :{}", error.getDetails());
         SelectionQuotationPayloadBO output = new SelectionQuotationPayloadBO();
         if(error.getCode().equals(ERROR_CODE_001) && !error.getDetails().isEmpty()) {
             output.setStatus(STATUS_BLOCKED);
