@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.bbva.pisd.dto.insurance</groupId>
 			<artifactId>PISDC011</artifactId>
-			<version>0.23.0</version>
+			<version>0.24.3</version>
 		</dependency>
 	</dependencies>
 	<build>

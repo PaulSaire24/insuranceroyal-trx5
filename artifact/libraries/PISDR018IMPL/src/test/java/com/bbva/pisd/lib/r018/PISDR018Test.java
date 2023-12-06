@@ -1,5 +1,6 @@
 package com.bbva.pisd.lib.r018;
 
+import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 import com.bbva.elara.domain.transaction.Context;
 import com.bbva.elara.domain.transaction.ThreadContext;
 
@@ -17,6 +18,7 @@ import com.bbva.pisd.dto.insurance.commons.InsuranceProductDTO;
 import com.bbva.pisd.dto.insurance.mock.MockDTO;
 
 import com.bbva.pisd.dto.insurance.utils.PISDConstants;
+import com.bbva.pisd.dto.insurance.utils.PISDProperties;
 import com.bbva.pisd.lib.r008.PISDR008;
 
 import com.bbva.pisd.lib.r018.impl.PISDR018Impl;
@@ -63,9 +65,13 @@ public class PISDR018Test {
 
 	private InsuranceBlackListDTO request;
 
+	private ApplicationConfigurationService applicationConfigurationService;
+
 	@Before
 	public void setUp() {
 		ThreadContext.set(new Context());
+
+		applicationConfigurationService = mock(ApplicationConfigurationService.class);
 
 		pisdR008 = mock(PISDR008.class);
 		pisdR018.setPisdR008(pisdR008);
@@ -79,6 +85,9 @@ public class PISDR018Test {
 		request.setBlockingCompany(new BlockingCompanyDTO(RIMAC));
 		request.setProduct(new InsuranceProductDTO(SALUD, null, null));
 		request.setIdentityDocument(new IdentityDocumentDTO(new DocumentTypeDTO("L"), "00000000"));
+
+		when(applicationConfigurationService.getProperty(PISDProperties.PRODUCT_BLACK_YELLOW_LIST.getValue())).thenReturn("VIDAINVERSION");
+		pisdR018.setApplicationConfigurationService(applicationConfigurationService);
 	}
 
 	@Test
@@ -207,6 +216,25 @@ public class PISDR018Test {
 		when(this.pisdR008.executeGetCustomerInformation(anyString())).thenReturn(null);
 
 		validation = this.pisdR018.executeBlackListValidation(this.request);
+
+		assertNotNull(validation);
+		assertNotNull(validation.getData());
+		assertFalse(validation.getData().isEmpty());
+	}
+
+	@Test
+	public void executeBlackWhiteListValidationOtherProduct() {
+		this.request.getProduct().setId("VIDAINVERSION");
+
+		InsuranceBlackListDTO responseIneligibleCustomer  = new InsuranceBlackListDTO();
+		responseIneligibleCustomer.setId("indicatorId");
+		responseIneligibleCustomer.setDescription("");
+		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_NO);
+
+		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject(), anyObject())).
+				thenReturn(responseIneligibleCustomer);
+
+		EntityOutBlackListDTO validation = this.pisdR018.executeBlackListValidation(this.request);
 
 		assertNotNull(validation);
 		assertNotNull(validation.getData());
