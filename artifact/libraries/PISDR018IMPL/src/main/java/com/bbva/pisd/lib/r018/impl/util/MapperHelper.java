@@ -2,14 +2,15 @@ package com.bbva.pisd.lib.r018.impl.util;
 
 import com.bbva.elara.configuration.manager.application.ApplicationConfigurationService;
 
-import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
-
 import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
-import com.bbva.pisd.dto.insurance.bo.*;
-
+import com.bbva.pisd.dto.insurance.bo.GeographicGroupsBO;
+import com.bbva.pisd.dto.insurance.bo.LocationBO;
+import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
+import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 
 import com.bbva.pisd.dto.insurance.commons.IdentityDataDTO;
@@ -131,10 +132,10 @@ public class MapperHelper {
         if(isNull(customerInformation)) {
             customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
         }
-        if(nonNull(customerInformation)){
-            if(nonNull(contactDetailsASO)) {
+        if(nonNull(customerInformation) && nonNull(contactDetailsASO)){
+
                 customerInformation.getContactDetails().addAll(contactDetailsASO.getData());
-            }
+
         }
 
         return this.validateMissingCustomerData(customerInformation);
