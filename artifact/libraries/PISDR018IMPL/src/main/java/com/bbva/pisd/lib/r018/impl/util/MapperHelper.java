@@ -8,10 +8,7 @@ import com.bbva.pisd.dto.insurance.aso.GetContactDetailsASO;
 import com.bbva.pisd.dto.insurance.blacklist.BlackListTypeDTO;
 import com.bbva.pisd.dto.insurance.blacklist.InsuranceBlackListDTO;
 
-import com.bbva.pisd.dto.insurance.bo.BlackListIndicatorBO;
-import com.bbva.pisd.dto.insurance.bo.LocationBO;
-import com.bbva.pisd.dto.insurance.bo.ContactDetailsBO;
-import com.bbva.pisd.dto.insurance.bo.SelectionQuotationPayloadBO;
+import com.bbva.pisd.dto.insurance.bo.*;
 
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 
@@ -280,7 +277,7 @@ public class MapperHelper {
     private String validateAddress(final CustomerBO customer) {
 
         final String message = this.applicationConfigurationService.getProperty(ConstantUtils.ADDRESS_MESSAGE_KEY);
-
+        final String geographicGroupTypeid = ConstantUtils.UNCATEGORIZED;
         final String defaultValue = ConstantUtils.XDEPURAR;
 
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
@@ -288,10 +285,11 @@ public class MapperHelper {
         if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
                 defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
             return message;
-        } else {
-            return WHITESPACE_CHARACTER;
         }
-
+        List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
+                .filter(geographicGroup -> geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
+                .collect(Collectors.toList());
+        return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
     }
 
     public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
