@@ -291,11 +291,13 @@ public class MapperHelper {
         LOGGER.info("****** aMapperHelper - validateAddress customerLocation getGeographicGroups :{}",customerLocation.getGeographicGroups());
         LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroupType :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
 
-
         List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
-                    .filter(geographicGroup -> Objects.nonNull(geographicGroup.getGeographicGroupType()) && geographicGroupTypeid.equals(Objects.nonNull(geographicGroup.getGeographicGroupType().getId())))
+                .filter(geographicGroup ->
+                        Objects.nonNull(geographicGroup.getGeographicGroupType()) &&
+                                Objects.nonNull(geographicGroup.getGeographicGroupType().getId()) &&
+                                geographicGroupTypeid.equals(geographicGroup.getGeographicGroupType().getId()))
                 .collect(Collectors.toList());
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation geographicGroups :{}",geographicGroups);
+        LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroupType :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
 
         return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
     }
