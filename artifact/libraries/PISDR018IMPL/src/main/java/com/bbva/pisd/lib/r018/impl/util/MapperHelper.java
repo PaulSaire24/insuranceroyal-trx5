@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -291,8 +292,10 @@ public class MapperHelper {
         LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroupType :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
 
         List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
-                .filter(geographicGroup -> geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
+                    .filter(geographicGroup -> Objects.nonNull(geographicGroup.getGeographicGroupType()) && geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
                 .collect(Collectors.toList());
+        LOGGER.info("****** MapperHelper - validateAddress customerLocation geographicGroups :{}",geographicGroups);
+
         return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
     }
 
