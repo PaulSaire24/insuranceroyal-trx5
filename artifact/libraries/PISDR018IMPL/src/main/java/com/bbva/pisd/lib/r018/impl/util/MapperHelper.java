@@ -131,6 +131,7 @@ public class MapperHelper {
         LOGGER.info("***** MapperHelper - executeGetContactDetailsService regexEmail ***** : {}", contactDetailsASO);
         if(isNull(customerInformation)) {
             customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
+            LOGGER.info("***** MapperHelper - executeGetContactDetailsService regexEmail ***** : {}", customerInformation);
         }
         if(nonNull(customerInformation) && nonNull(contactDetailsASO)){
 
@@ -280,7 +281,6 @@ public class MapperHelper {
         final String message = this.applicationConfigurationService.getProperty(ConstantUtils.ADDRESS_MESSAGE_KEY);
         final String geographicGroupTypeid = ConstantUtils.UNCATEGORIZED;
         final String defaultValue = ConstantUtils.XDEPURAR;
-
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
         LOGGER.info("****** MapperHelper - validateAddress customerLocation name :{}",customerLocation.toString());
         if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
