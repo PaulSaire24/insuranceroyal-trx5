@@ -282,13 +282,13 @@ public class MapperHelper {
         final String geographicGroupTypeid = ConstantUtils.UNCATEGORIZED;
         final String defaultValue = ConstantUtils.XDEPURAR;
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation name :{}",customerLocation.toString());
+        LOGGER.info("****** MapperHelper - validateAddress customerLocation :{}",customerLocation.toString());
         if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
                 defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
             return message;
         }
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation name :{}",customerLocation.getGeographicGroups());
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation name :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
+        LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroups :{}",customerLocation.getGeographicGroups());
+        LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroupType :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
 
         List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
                 .filter(geographicGroup -> geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
