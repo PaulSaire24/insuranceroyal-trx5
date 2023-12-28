@@ -297,7 +297,7 @@ public class MapperHelper {
                                 Objects.nonNull(geographicGroup.getGeographicGroupType().getId()) &&
                                 geographicGroupTypeid.equals(geographicGroup.getGeographicGroupType().getId()))
                 .collect(Collectors.toList());
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroupType :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
+        LOGGER.info("****** MapperHelper - validateAddress customerLocation geographicGroups :{}",geographicGroups);
 
         return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
     }
