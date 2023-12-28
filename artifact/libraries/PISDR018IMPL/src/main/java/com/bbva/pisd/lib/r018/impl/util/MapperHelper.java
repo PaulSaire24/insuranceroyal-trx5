@@ -282,6 +282,7 @@ public class MapperHelper {
         final String defaultValue = ConstantUtils.XDEPURAR;
 
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
+        LOGGER.info("****** MapperHelper - validateAddress customerLocation name :{}",customerLocation.toString());
         if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
                 defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
             return message;
@@ -290,7 +291,6 @@ public class MapperHelper {
         List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
                 .filter(geographicGroup -> geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
                 .collect(Collectors.toList());
-        LOGGER.info("****** MapperHelper - validateAddress geographicGroups size :{}",geographicGroups.size());
         return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
     }
 
