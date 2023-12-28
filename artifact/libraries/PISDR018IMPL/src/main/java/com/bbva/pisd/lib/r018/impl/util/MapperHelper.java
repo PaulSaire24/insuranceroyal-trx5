@@ -287,7 +287,7 @@ public class MapperHelper {
                 defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
             return message;
         }
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroups :{}",customerLocation.getGeographicGroups());
+        LOGGER.info("****** aMapperHelper - validateAddress customerLocation getGeographicGroups :{}",customerLocation.getGeographicGroups());
         LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroupType :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
 
         List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
