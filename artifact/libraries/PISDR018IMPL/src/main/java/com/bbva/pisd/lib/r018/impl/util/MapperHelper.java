@@ -280,7 +280,7 @@ public class MapperHelper {
     private String validateAddress(final CustomerBO customer) {
 
         final String message = this.applicationConfigurationService.getProperty(ConstantUtils.ADDRESS_MESSAGE_KEY);
-        final String geographicGroupTypeid = ConstantUtils.UNCATEGORIZED;
+        final String geographicGroupTypeid = this.applicationConfigurationService.getProperty(ConstantUtils.UNCATEGORIZED);;
         final String defaultValue = ConstantUtils.XDEPURAR;
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
         if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||

@@ -220,7 +220,8 @@ public class MapperHelperTest {
     @Test
     public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_MissingCustomerBasicInformation() {
         String nameValidation = "Revisar nombres completos";
-
+        when(this.applicationConfigurationService.getProperty("UNCATEGORIZED")).
+                thenReturn("NA");
         when(this.applicationConfigurationService.getProperty("customer-name-message-key")).
                 thenReturn(nameValidation);
 
@@ -272,7 +273,8 @@ public class MapperHelperTest {
     @Test
     public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_MissingContactDetails() {
         String cellPhoneValidation = "Revisar Celular";
-
+        when(this.applicationConfigurationService.getProperty("UNCATEGORIZED")).
+                thenReturn("NA");
         when(this.applicationConfigurationService.getProperty("cellphone-message-key")).
                 thenReturn(cellPhoneValidation);
 
@@ -432,7 +434,8 @@ public class MapperHelperTest {
     @Test
     public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatPhoneContactDetails() {
         String cellPhoneValidation = "Revisar Celular";
-
+        when(this.applicationConfigurationService.getProperty("UNCATEGORIZED")).
+                thenReturn("NA");
         when(this.applicationConfigurationService.getProperty("cellphone-message-key")).
                 thenReturn(cellPhoneValidation);
 
@@ -459,7 +462,8 @@ public class MapperHelperTest {
     public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatEmailContactDetails() {
 
         String emailValidation = "Revisar Correo";
-
+        when(this.applicationConfigurationService.getProperty("UNCATEGORIZED")).
+                thenReturn("NA");
         when(this.applicationConfigurationService.getProperty("email-message-key")).
                 thenReturn(emailValidation);
 
@@ -483,7 +487,8 @@ public class MapperHelperTest {
     @Test
     public void createResponseBlackListBBVAServiceOtherProducts_ClientUnavailable_BadFormatEmailAndPhoneContactDetails() {
         String cellPhoneValidation = "Revisar Celular";
-
+        when(this.applicationConfigurationService.getProperty("UNCATEGORIZED")).
+                thenReturn("NA");
         when(this.applicationConfigurationService.getProperty("cellphone-message-key")).
                 thenReturn(cellPhoneValidation);
 

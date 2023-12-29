@@ -15,5 +15,5 @@ public class ConstantUtils {
     public static final String EMAIL_MESSAGE_KEY="email-message-key";
     public static final String ADDRESS_MESSAGE_KEY="address-message-key";
     public static final String XDEPURAR="xdepurar";
-    public static final String UNCATEGORIZED="NA";
+    public static final String UNCATEGORIZED="UNCATEGORIZED";
 }
