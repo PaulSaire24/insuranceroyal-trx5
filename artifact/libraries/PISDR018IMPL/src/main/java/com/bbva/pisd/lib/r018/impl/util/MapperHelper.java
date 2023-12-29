@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -131,6 +132,7 @@ public class MapperHelper {
         LOGGER.info("***** MapperHelper - executeGetContactDetailsService regexEmail ***** : {}", contactDetailsASO);
         if(isNull(customerInformation)) {
             customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
+            LOGGER.info("***** MapperHelper - executeGetContactDetailsService regexEmail ***** : {}", customerInformation);
         }
         if(nonNull(customerInformation) && nonNull(contactDetailsASO)){
 
@@ -278,19 +280,21 @@ public class MapperHelper {
     private String validateAddress(final CustomerBO customer) {
 
         final String message = this.applicationConfigurationService.getProperty(ConstantUtils.ADDRESS_MESSAGE_KEY);
-        final String geographicGroupTypeid = ConstantUtils.UNCATEGORIZED;
+        final String geographicGroupTypeid = this.applicationConfigurationService.getProperty(ConstantUtils.UNCATEGORIZED);;
         final String defaultValue = ConstantUtils.XDEPURAR;
-
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
-
         if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
                 defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
             return message;
         }
         List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
-                .filter(geographicGroup -> geographicGroup.getGeographicGroupType().getId().equals(geographicGroupTypeid))
+                .filter(geographicGroup ->
+                        Objects.nonNull(geographicGroup.getGeographicGroupType()) &&
+                                Objects.nonNull(geographicGroup.getGeographicGroupType().getId()) &&
+                                geographicGroupTypeid.equals(geographicGroup.getGeographicGroupType().getId()))
                 .collect(Collectors.toList());
-        return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
+
+        return geographicGroups.size() > 0 ? message : WHITESPACE_CHARACTER;
     }
 
     public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
