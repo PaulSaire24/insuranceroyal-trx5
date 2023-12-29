@@ -299,7 +299,7 @@ public class MapperHelper {
                 .collect(Collectors.toList());
         LOGGER.info("****** MapperHelper - validateAddress customerLocation geographicGroups :{}",geographicGroups);
 
-        return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
+        return geographicGroups.size() > 0 ? message : WHITESPACE_CHARACTER;
     }
 
     public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
