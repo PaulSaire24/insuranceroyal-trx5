@@ -283,21 +283,16 @@ public class MapperHelper {
         final String geographicGroupTypeid = ConstantUtils.UNCATEGORIZED;
         final String defaultValue = ConstantUtils.XDEPURAR;
         LocationBO customerLocation = customer.getAddresses().get(0).getLocation();
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation :{}",customerLocation.toString());
         if(CollectionUtils.isEmpty(customerLocation.getGeographicGroups()) ||
                 defaultValue.equalsIgnoreCase(customerLocation.getGeographicGroups().get(0).getName())) {
             return message;
         }
-        LOGGER.info("****** aMapperHelper - validateAddress customerLocation getGeographicGroups :{}",customerLocation.getGeographicGroups());
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation getGeographicGroupType :{}",customerLocation.getGeographicGroups().get(1).getGeographicGroupType().getId());
-
         List<GeographicGroupsBO> geographicGroups = customerLocation.getGeographicGroups().stream()
                 .filter(geographicGroup ->
                         Objects.nonNull(geographicGroup.getGeographicGroupType()) &&
                                 Objects.nonNull(geographicGroup.getGeographicGroupType().getId()) &&
                                 geographicGroupTypeid.equals(geographicGroup.getGeographicGroupType().getId()))
                 .collect(Collectors.toList());
-        LOGGER.info("****** MapperHelper - validateAddress customerLocation geographicGroups :{}",geographicGroups);
 
         return geographicGroups.size() > 0 ? message : WHITESPACE_CHARACTER;
     }
