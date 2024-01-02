@@ -72,9 +72,13 @@ public class PISDR018Impl extends PISDR018Abstract {
 	}
 
 	private void validateBlackListType(final InsuranceBlackListDTO input) {
+		LOGGER.info("***** PISDR018Impl - validateBlackListType START ***** product: {}", input.getProduct().getId());
 		String products = this.applicationConfigurationService.getProperty(PISDProperties.PRODUCT_BLACK_YELLOW_LIST.getValue());
+		LOGGER.info("***** PISDR018Impl - validateBlackListType ***** products: {}", products);
 		String[] productsAll = products.split(",");
 		List<String> productList = Arrays.stream(productsAll).collect(toList());
+		LOGGER.info("***** PISDR018Impl - validateBlackListType ***** productList: {}", productList);
+		LOGGER.info("***** PISDR018Impl - validateBlackListType ***** BlackListType1: {}", input.getBlackListType());
 
 		if (isNull(input.getBlackListType()) || isNull(input.getBlackListType().getId())) {
 			input.setBlackListType(new BlackListTypeDTO(LIST_BLACK));
@@ -89,7 +93,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 				input.setBlackListType(new BlackListTypeDTO(sb.toString()));
 			}}
 		);
-
+		LOGGER.info("***** PISDR018Impl - validateBlackListType END ***** BlackListType: {}", input.getBlackListType());
 	}
 
 	private InsuranceBlackListDTO validateCustomerAvailability(final InsuranceBlackListDTO requestBody) {
