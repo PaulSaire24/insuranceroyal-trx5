@@ -146,7 +146,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 		}
 	}
 	private static boolean isVidadinversion(String productId) {
-		return productId.equals(productId.equals(PISDConstants.ProductVidaInversionLife.VIDA_INVERSION));
+		return productId.equals(PISDConstants.ProductVidaInversionLife.VIDA_INVERSION);
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {
