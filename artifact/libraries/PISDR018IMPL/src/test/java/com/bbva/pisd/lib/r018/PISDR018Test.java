@@ -24,6 +24,7 @@ import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r018.impl.PISDR018Impl;
 
 import com.bbva.pisd.lib.r018.impl.util.MapperHelper;
+import com.bbva.rbvd.lib.r046.RBVDR046;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,6 +60,8 @@ public class PISDR018Test {
 
 	private PISDR008 pisdR008;
 
+	private RBVDR046 rbvdr046;
+
 	private MapperHelper mapperHelper;
 
 	private MockDTO mockDTO;
@@ -75,6 +78,9 @@ public class PISDR018Test {
 
 		pisdR008 = mock(PISDR008.class);
 		pisdR018.setPisdR008(pisdR008);
+
+		rbvdr046 = mock(RBVDR046.class);
+		pisdR018.setRbvdR046(rbvdr046);
 
 		mapperHelper = mock(MapperHelper.class);
 		pisdR018.setMapperHelper(mapperHelper);

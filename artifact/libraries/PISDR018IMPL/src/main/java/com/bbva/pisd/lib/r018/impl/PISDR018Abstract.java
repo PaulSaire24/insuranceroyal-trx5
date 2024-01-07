@@ -4,6 +4,7 @@ import com.bbva.elara.configuration.manager.application.ApplicationConfiguration
 import com.bbva.elara.library.AbstractLibrary;
 import com.bbva.pisd.lib.r008.PISDR008;
 import com.bbva.pisd.lib.r018.PISDR018;
+import com.bbva.rbvd.lib.r046.RBVDR046;
 import com.bbva.pisd.lib.r018.impl.util.MapperHelper;
 
 /**
@@ -14,6 +15,8 @@ public abstract class PISDR018Abstract extends AbstractLibrary implements PISDR0
 	protected ApplicationConfigurationService applicationConfigurationService;
 
 	protected PISDR008 pisdR008;
+
+	protected RBVDR046 rbvdR046;
 
 	protected MapperHelper mapperHelper;
 
@@ -30,6 +33,13 @@ public abstract class PISDR018Abstract extends AbstractLibrary implements PISDR0
 	*/
 	public void setPisdR008(PISDR008 pisdR008) {
 		this.pisdR008 = pisdR008;
+	}
+
+	/**
+	* @param rbvdR046 the this.rbvdR046 to set
+	*/
+	public void setRbvdR046(RBVDR046 rbvdR046) {
+		this.rbvdR046 = rbvdR046;
 	}
 
 	public void setMapperHelper(MapperHelper mapperHelper) { this.mapperHelper = mapperHelper; }
