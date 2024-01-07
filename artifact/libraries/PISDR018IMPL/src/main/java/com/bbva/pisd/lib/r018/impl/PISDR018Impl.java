@@ -129,7 +129,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 				identityData.setProducto(productId);
 			}
-			setProductNameVidaInversion( productId, identityData);
+			setProductNameVidaInversion(productId, identityData);
 			SelectionQuotationPayloadBO rimacResponse = this.pisdR008.executeGetBlackListRiskService(identityData, requestBody.getTraceId());
 			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac END *****");
 			return this.mapperHelper.createResponseBlackListBBVAService(requestBody, rimacResponse, customerInformation);

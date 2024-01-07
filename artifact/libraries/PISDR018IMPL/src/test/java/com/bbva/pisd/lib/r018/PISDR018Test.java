@@ -237,6 +237,9 @@ public class PISDR018Test {
 		responseIneligibleCustomer.setDescription("");
 		responseIneligibleCustomer.setIsBlocked(PISDConstants.LETTER_NO);
 
+		IdentityDataDTO identityData = new IdentityDataDTO();
+		when(this.mapperHelper.createBlackListRimacRequest(anyObject(), anyObject())).
+				thenReturn(identityData);
 		when(this.mapperHelper.createResponseBlackListBBVAService(anyObject(), anyObject(), anyObject())).
 				thenReturn(responseIneligibleCustomer);
 
