@@ -215,6 +215,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 		List<String> productsLife = new ArrayList();
 		productsLife.add(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
 		productsLife.add(PISDConstants.ProductVidaDinamicoLife.VIDA_DINAMICO);
+		productsLife.add(PISDConstants.ProductVidaInversionLife.VIDA_INVERSION);
 		return nonNull(payload.getProducto()) && productsLife.contains(payload.getProducto());
 	}
 
