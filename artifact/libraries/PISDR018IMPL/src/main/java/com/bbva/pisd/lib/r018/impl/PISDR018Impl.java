@@ -129,6 +129,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 				identityData.setProducto(productId);
 			}
+			setProductNameVidaInversion( productId, identityData);
 			SelectionQuotationPayloadBO rimacResponse = this.pisdR008.executeGetBlackListRiskService(identityData, requestBody.getTraceId());
 			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac END *****");
 			return this.mapperHelper.createResponseBlackListBBVAService(requestBody, rimacResponse, customerInformation);
@@ -137,6 +138,15 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 	private static boolean isVidadinamicoOrEasyYes(String productId) {
 		return productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) || productId.equals(PISDConstants.ProductVidaDinamicoLife.VIDA_DINAMICO);
+	}
+
+	private void setProductNameVidaInversion(String productId, IdentityDataDTO identityData){
+		if (isVidadinversion(productId)) {
+			identityData.setProducto(productId);
+		}
+	}
+	private static boolean isVidadinversion(String productId) {
+		return productId.equals(productId.equals(PISDConstants.ProductVidaInversionLife.VIDA_INVERSION));
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {
