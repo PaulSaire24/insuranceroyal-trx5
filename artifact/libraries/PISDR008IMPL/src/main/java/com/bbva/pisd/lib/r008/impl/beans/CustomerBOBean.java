@@ -23,7 +23,7 @@ public class CustomerBOBean {
     }
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerBOBean.class);
 
-    public CustomerBO mapperCustomer(PEWUResponse result, List<ContactDetailsBO> contactDetailsBO){
+    public CustomerBO mapperCustomer(PEWUResponse result){
         LOGGER.info("***** PISDR008Impl - mapperCustomer Start *****");
         /* section customer data */
         CustomerBO customer = new CustomerBO();
@@ -71,9 +71,8 @@ public class CustomerBOBean {
             contactDetailPhone.setContactType(new ContactTypeBO());
             contactDetailPhone.getContactType().setId(Constans.CustomerContact.PHONE_NUMBER);
             contactDetailPhone.getContactType().setName(result.getPemsalw5().getDescmco());
-            contactDetailsBO.add(contactDetailPhone);
+            contactDetailsBOList.add(contactDetailPhone);
         }
-
         /* section contact2 type, validate MOBILE_NUMBER */
         LOGGER.info("***** PISDR008Impl - executeGetCustomerHost  ***** Map getTipoco2: {}", result.getPemsalwu().getTipoco2());
         if (StringUtils.isNotEmpty(result.getPemsalwu().getContac2())) {
@@ -83,10 +82,10 @@ public class CustomerBOBean {
             contactDetailMobileNumber.setContactType(new ContactTypeBO());
             contactDetailMobileNumber.getContactType().setId(Constans.CustomerContact.MOBILE_NUMBER);
             contactDetailMobileNumber.getContactType().setName(result.getPemsalw5().getDescmc1());
-            contactDetailsBO.add(contactDetailMobileNumber);
+            contactDetailsBOList.add(contactDetailMobileNumber);
         }
 
-        /* section contact2 type, validate EMAIL */
+        /* section contact3 type, validate EMAIL */
         LOGGER.info("***** PISDR008Impl - executeGetCustomerHost  ***** Map getTipoco3: {}", result.getPemsalwu().getTipoco3());
         if (StringUtils.isNotEmpty(result.getPemsalwu().getContac3())) {
             ContactDetailsBO contactDetailEmail = new ContactDetailsBO();
@@ -95,10 +94,10 @@ public class CustomerBOBean {
             contactDetailEmail.setContactType(new ContactTypeBO());
             contactDetailEmail.getContactType().setId(Constans.CustomerContact.EMAIL);
             contactDetailEmail.getContactType().setName(result.getPemsalw5().getDescmc2());
-            contactDetailsBO.add(contactDetailEmail);
+            contactDetailsBOList.add(contactDetailEmail);
         }
 
-        customer.setContactDetails(contactDetailsBO);
+        customer.setContactDetails(contactDetailsBOList);
         /* section contact Details */
 
         /* section addresses */
@@ -106,6 +105,7 @@ public class CustomerBOBean {
         AddressesBO address = new AddressesBO();
         address.setAddressType(new AddressTypeBO());
         address.getAddressType().setId(result.getPemsalwu().getTipodir()); // map address type
+        address.getAddressType().setName(result.getPemsalw4().getDepetdo());
         address.setResidenceStartDate(result.getPemsalwu().getFedocac());
         address.setAddressId(result.getPemsalwu().getCoddire());
 
@@ -113,9 +113,55 @@ public class CustomerBOBean {
         location.setCountry(new CountryBO());
         location.getCountry().setId(result.getPemsalwu().getPaisdom());
         location.setAdditionalInformation(result.getPemsalwu().getDetalle());
+        GeographicGroupsBO avenida = new GeographicGroupsBO();
+        avenida.setGeographicGroupType(new GeographicGroupTypeBO());
+        avenida.getGeographicGroupType().setId(result.getPemsalwu().getIdendi1());
+        avenida.getGeographicGroupType().setName(result.getPemsalw4().getDescvia());
+        avenida.setName(result.getPemsalwu().getNombdi1());
+
+        GeographicGroupsBO uncategory = new GeographicGroupsBO();
+        uncategory.setGeographicGroupType(new GeographicGroupTypeBO());
+        uncategory.getGeographicGroupType().setId(result.getPemsalwu().getIdendi2());
+        uncategory.getGeographicGroupType().setName(result.getPemsalw4().getDescurb());
+        uncategory.setName(result.getPemsalwu().getNombdi2());
+
+        GeographicGroupsBO departament = new GeographicGroupsBO();
+        departament.setGeographicGroupType(new GeographicGroupTypeBO());
+        departament.setName(result.getPemsalw4().getDesdept());
+        departament.setCode(result.getPemsalwu().getCodigod());
+
+        GeographicGroupsBO province = new GeographicGroupsBO();
+        province.setGeographicGroupType(new GeographicGroupTypeBO());
+        province.setName(result.getPemsalw4().getDesprov());
+        province.setCode(result.getPemsalwu().getCodigop());
+
+        GeographicGroupsBO  district = new GeographicGroupsBO();
+        district.setGeographicGroupType(new GeographicGroupTypeBO());
+        district.setName(result.getPemsalw4().getDesdist());
+        district.setCode(result.getPemsalwu().getCodigdi());
+
+        GeographicGroupsBO  extNumber = new GeographicGroupsBO();
+        extNumber.setGeographicGroupType(new GeographicGroupTypeBO());
+        extNumber.setName(result.getPemsalwu().getNroext1());
+
+        GeographicGroupsBO  intNumber = new GeographicGroupsBO();
+        intNumber.setGeographicGroupType(new GeographicGroupTypeBO());
+        intNumber.setName(result.getPemsalwu().getNroint1());
+
+        GeographicGroupsBO ubigeo = new GeographicGroupsBO();
+        String ubi = result.getPemsalwu().getCodigod() + result.getPemsalwu().getCodigop() + result.getPemsalwu().getCodigdi() ;
+        ubigeo.setGeographicGroupType(new GeographicGroupTypeBO());
+        ubigeo.setCode(ubi);
 
         List<GeographicGroupsBO> geographicGroups = new ArrayList<>();
-
+        geographicGroups.add(avenida);
+        geographicGroups.add(uncategory);
+        geographicGroups.add(departament);
+        geographicGroups.add(province);
+        geographicGroups.add(district);
+        geographicGroups.add(extNumber);
+        geographicGroups.add(intNumber);
+        geographicGroups.add(ubigeo);
         /* map geographicGroup ? */
         location.setGeographicGroups(geographicGroups);
 

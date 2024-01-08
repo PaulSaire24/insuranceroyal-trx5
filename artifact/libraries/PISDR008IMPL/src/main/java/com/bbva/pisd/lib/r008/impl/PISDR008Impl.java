@@ -91,6 +91,8 @@ public class PISDR008Impl extends PISDR008Abstract {
 		String apiBlackListId = "";
 
 		if(Boolean.TRUE.equals(validateLifeProduct(payload))) {
+			LOGGER.info("***** PISDR008Impl - executeGetBlackListRiskService ***** Uri: {} ","URI_BLACKLIST_EASYYES");
+
 			uri = PISDProperties.URI_BLACKLIST_EASYYES.getValue();
 			apiBlackListId = PISDProperties.ID_API_BLACKLISTEASYYES_RIMAC.getValue();
 		} else {
@@ -178,12 +180,10 @@ public class PISDR008Impl extends PISDR008Abstract {
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer customerId {} *****",customerId);
 		PEWUResponse result = this.pbtqR002.executeSearchInHostByCustomerId(customerId);
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer  ***** Response Host: {}", result);
-		GetContactDetailsASO contactDetailsASO =  this.rbvdR046.executeGetContactDetailsService(customerId);
-		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer  ***** Response RBVDR046: {}", contactDetailsASO);
 
 		if( Objects.isNull(result.getHostAdviceCode()) || result.getHostAdviceCode().isEmpty()){
 			CustomerBOBean customerListAsoBean = new CustomerBOBean(this.applicationConfigurationService);
-			return customerListAsoBean.mapperCustomer(result,contactDetailsASO.getData());
+			return customerListAsoBean.mapperCustomer(result);
 		}
 		this.addAdviceWithDescription(result.getHostAdviceCode(), result.getHostMessage());
 		LOGGER.info("***** RBVDR301Impl - executeGetListCustomer ***** with error: {}", result.getHostMessage());
@@ -215,6 +215,7 @@ public class PISDR008Impl extends PISDR008Abstract {
 		List<String> productsLife = new ArrayList();
 		productsLife.add(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC);
 		productsLife.add(PISDConstants.ProductVidaDinamicoLife.VIDA_DINAMICO);
+		productsLife.add(PISDConstants.ProductVidaInversionLife.VIDA_INVERSION);
 		return nonNull(payload.getProducto()) && productsLife.contains(payload.getProducto());
 	}
 

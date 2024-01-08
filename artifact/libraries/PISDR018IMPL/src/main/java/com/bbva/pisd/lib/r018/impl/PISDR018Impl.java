@@ -1,6 +1,5 @@
 package com.bbva.pisd.lib.r018.impl;
 
-import com.bbva.pisd.dto.insurance.aso.CustomerListASO;
 import com.bbva.pisd.dto.insurance.bo.customer.CustomerBO;
 import com.bbva.pisd.dto.insurance.utils.PISDProperties;
 import org.apache.commons.lang3.StringUtils;
@@ -72,9 +71,13 @@ public class PISDR018Impl extends PISDR018Abstract {
 	}
 
 	private void validateBlackListType(final InsuranceBlackListDTO input) {
+		LOGGER.info("***** PISDR018Impl - validateBlackListType START ***** product: {}", input.getProduct().getId());
 		String products = this.applicationConfigurationService.getProperty(PISDProperties.PRODUCT_BLACK_YELLOW_LIST.getValue());
+		LOGGER.info("***** PISDR018Impl - validateBlackListType ***** products: {}", products);
 		String[] productsAll = products.split(",");
 		List<String> productList = Arrays.stream(productsAll).collect(toList());
+		LOGGER.info("***** PISDR018Impl - validateBlackListType ***** productList: {}", productList);
+		LOGGER.info("***** PISDR018Impl - validateBlackListType ***** BlackListType1: {}", input.getBlackListType());
 
 		if (isNull(input.getBlackListType()) || isNull(input.getBlackListType().getId())) {
 			input.setBlackListType(new BlackListTypeDTO(LIST_BLACK));
@@ -89,7 +92,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 				input.setBlackListType(new BlackListTypeDTO(sb.toString()));
 			}}
 		);
-
+		LOGGER.info("***** PISDR018Impl - validateBlackListType END ***** BlackListType: {}", input.getBlackListType());
 	}
 
 	private InsuranceBlackListDTO validateCustomerAvailability(final InsuranceBlackListDTO requestBody) {
@@ -118,7 +121,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 				customerInformation = this.pisdR008.executeGetCustomerHost(requestBody.getCustomerId());
 				if(!isNull(requestBody.getCustomerId()) || !StringUtils.isBlank(requestBody.getCustomerId())) {
 					// default birthdate
-					identityData.setFechaNacimiento("1995-04-02");
+					identityData.setFechaNacimiento(null);
 				}
 				if(Objects.nonNull(customerInformation)){
 					identityData.setFechaNacimiento(customerInformation.getBirthData().getBirthDate());
@@ -126,6 +129,7 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 				identityData.setProducto(productId);
 			}
+			setProductNameVidaInversion(productId, identityData);
 			SelectionQuotationPayloadBO rimacResponse = this.pisdR008.executeGetBlackListRiskService(identityData, requestBody.getTraceId());
 			LOGGER.info("***** PISDR018Impl - getBlackListValidationRimac END *****");
 			return this.mapperHelper.createResponseBlackListBBVAService(requestBody, rimacResponse, customerInformation);
@@ -134,6 +138,15 @@ public class PISDR018Impl extends PISDR018Abstract {
 
 	private static boolean isVidadinamicoOrEasyYes(String productId) {
 		return productId.equals(PISDConstants.ProductEasyYesLife.EASY_YES_RIMAC) || productId.equals(PISDConstants.ProductVidaDinamicoLife.VIDA_DINAMICO);
+	}
+
+	private void setProductNameVidaInversion(String productId, IdentityDataDTO identityData){
+		if (isVidadinversion(productId)) {
+			identityData.setProducto(productId);
+		}
+	}
+	private static boolean isVidadinversion(String productId) {
+		return productId.equals(PISDConstants.ProductVidaInversionLife.VIDA_INVERSION);
 	}
 
 	private InsuranceBlackListDTO consultBBVABlackList(String customerId) {

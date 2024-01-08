@@ -104,10 +104,10 @@
           },
           {
             "geographicGroupType": {
-              "id": "URBANIZATION",
-              "name": "URBANIZACION"
+              "id": "NA",
+              "name": "NA"
             },
-            "name": "UNION"
+            "name": "UNCATEGORIZED"
           },
           {
             "geographicGroupType": {

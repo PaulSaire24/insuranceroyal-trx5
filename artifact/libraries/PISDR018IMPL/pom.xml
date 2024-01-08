@@ -93,6 +93,17 @@
 			<version>${apx.core.online.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.bbva.rbvd</groupId>
+			<artifactId>RBVDR046</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bbva.rbvd</groupId>
+			<artifactId>RBVDR046</artifactId>
+			<version>0.2.0</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>

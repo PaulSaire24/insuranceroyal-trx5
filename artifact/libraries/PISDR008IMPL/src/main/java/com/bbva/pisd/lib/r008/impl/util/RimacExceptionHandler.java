@@ -13,6 +13,7 @@ import org.springframework.web.client.RestClientException;
 public class RimacExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(RimacExceptionHandler.class);
     private static final String ERROR_CODE_001 = "VIDA001";
+    private static final String ERROR_CODE_002 = "URCOT005";
     private static final String STATUS_BLOCKED = "1";
 
     public SelectionQuotationPayloadBO handler(RestClientException exception) {
@@ -26,7 +27,7 @@ public class RimacExceptionHandler {
     }
 
     private SelectionQuotationPayloadBO clientExceptionHandler(HttpClientErrorException exception) {
-        LOGGER.debug("HttpClientErrorException - Response body: {}", exception.getResponseBodyAsString());
+        LOGGER.info("HttpClientErrorException - Response body: {}", exception.getResponseBodyAsString());
         ErrorRimacBO errorObject = this.getErrorObject(exception.getResponseBodyAsString());
         return this.throwingBusinessException(errorObject.getError());
     }
@@ -36,9 +37,15 @@ public class RimacExceptionHandler {
     }
 
     private SelectionQuotationPayloadBO throwingBusinessException(ErrorResponseBO error) {
-        LOGGER.debug("Exception error code -> {}", error.getCode());
+        LOGGER.info("Exception error code -> {}", error.getCode());
+        LOGGER.info("Exception error - Error :{}", error);
+        LOGGER.info("Exception error - ErrorDetail :{}", error.getDetails());
         SelectionQuotationPayloadBO output = new SelectionQuotationPayloadBO();
         if(error.getCode().equals(ERROR_CODE_001) && !error.getDetails().isEmpty()) {
+            output.setStatus(STATUS_BLOCKED);
+            output.setMensaje(PISDErrors.ERROR_AGE_VALIDATION_BLACKLIST.getMessage());
+            return output;
+        }else if(error.getCode().equals(ERROR_CODE_002) && !error.getDetails().isEmpty()) {
             output.setStatus(STATUS_BLOCKED);
             output.setMensaje(PISDErrors.ERROR_AGE_VALIDATION_BLACKLIST.getMessage());
             return output;
