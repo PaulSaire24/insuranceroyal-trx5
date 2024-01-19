@@ -111,11 +111,10 @@
           },
           {
             "geographicGroupType": {
-              "id": "DEPARTMENT",
-              "name": "DEPARTMENT"
+              "id": "NA",
+              "name": "NA"
             },
-            "code": "01",
-            "name": "LIMA"
+            "name": "UNCATEGORIZED"
           },
           {
             "geographicGroupType": {
