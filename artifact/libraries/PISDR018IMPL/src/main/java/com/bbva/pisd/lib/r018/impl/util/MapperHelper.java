@@ -295,7 +295,7 @@ public class MapperHelper {
                                 geographicGroupTypeid.equals(geographicGroup.getGeographicGroupType().getId()))
                 .collect(Collectors.toList());
 
-        return geographicGroups.size() > 0 ? message : WHITESPACE_CHARACTER;
+        return geographicGroups.size() > 1 ? message : WHITESPACE_CHARACTER;
     }
 
     public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
